@@ -59,8 +59,9 @@ export default function BrowseItemsPage() {
                                 <SelectItem value="electronics">Electronics</SelectItem>
                                 <SelectItem value="clothing">Clothing</SelectItem>
                                 <SelectItem value="bags">Bags</SelectItem>
-                                <SelectItem value="keys">Keys</SelectItem>
-                                <SelectItem value="pets">Pets</SelectItem>
+                                <SelectItem value="keys & wallets">Keys & Wallets</SelectItem>
+                                <SelectItem value="documents">Documents</SelectItem>
+                                <SelectItem value="others">Others</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

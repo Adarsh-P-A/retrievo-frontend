@@ -124,11 +124,11 @@ export function ItemForm({ type }: ItemFormProps) {
                                     control={form.control}
                                     name="category"
                                     render={({ field }) => (
-                                        <FormItem>
+                                        <FormItem className="col-span-1">
                                             <FormLabel>Category</FormLabel>
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
-                                                    <SelectTrigger className="h-11">
+                                                    <SelectTrigger className="h-11 w-full">
                                                         <SelectValue placeholder="Select a category" />
                                                     </SelectTrigger>
                                                 </FormControl>
@@ -136,10 +136,9 @@ export function ItemForm({ type }: ItemFormProps) {
                                                     <SelectItem value="electronics">Electronics</SelectItem>
                                                     <SelectItem value="clothing">Clothing</SelectItem>
                                                     <SelectItem value="bags">Bags</SelectItem>
-                                                    <SelectItem value="keys">Keys</SelectItem>
-                                                    <SelectItem value="pets">Pets</SelectItem>
+                                                    <SelectItem value="keys & wallets">Keys & Wallets</SelectItem>
                                                     <SelectItem value="documents">Documents</SelectItem>
-                                                    <SelectItem value="other">Other</SelectItem>
+                                                    <SelectItem value="others">Others</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />
@@ -151,23 +150,19 @@ export function ItemForm({ type }: ItemFormProps) {
                                     control={form.control}
                                     name="date"
                                     render={({ field }) => (
-                                        <FormItem className="flex flex-col">
-                                            <FormLabel>Date {type === 'lost' ? 'Lost' : 'Found'}</FormLabel>
+                                        <FormItem className="col-span-1 flex flex-col">
+                                            <FormLabel>Date {type === "lost" ? "Lost" : "Found"}</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <FormControl>
                                                         <Button
-                                                            variant={"outline"}
+                                                            variant="outline"
                                                             className={cn(
                                                                 "w-full pl-3 text-left font-normal h-11",
                                                                 !field.value && "text-muted-foreground"
                                                             )}
                                                         >
-                                                            {field.value ? (
-                                                                format(field.value, "PPP")
-                                                            ) : (
-                                                                <span>Pick a date</span>
-                                                            )}
+                                                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
                                                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                                         </Button>
                                                     </FormControl>
@@ -180,7 +175,6 @@ export function ItemForm({ type }: ItemFormProps) {
                                                         disabled={(date) =>
                                                             date > new Date() || date < new Date("1900-01-01")
                                                         }
-                                                        initialFocus
                                                     />
                                                 </PopoverContent>
                                             </Popover>

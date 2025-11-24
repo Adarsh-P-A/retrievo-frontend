@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MOCK_ITEMS } from '@/lib/mock-data';
@@ -41,7 +42,7 @@ export default async function ItemPage({ params }: ItemPageProps) {
                                     : 'bg-green-500 hover:bg-green-600 border-green-600'
                                     }`}
                             >
-                                {item.type === 'lost' ? 'Lost Item' : 'Found Item'}
+                                {item.type === 'lost' ? 'Lost' : 'Found'}
                             </Badge>
                         </div>
                     </div>
@@ -93,16 +94,24 @@ export default async function ItemPage({ params }: ItemPageProps) {
                                         <Avatar className="h-6 w-6">
                                             <AvatarFallback className="text-[10px]">U</AvatarFallback>
                                         </Avatar>
-                                        <p className="text-muted-foreground text-sm">User {item.ownerId || item.finderId || 'Unknown'}</p>
+                                        <p className="text-muted-foreground text-sm">{item.ownerId || item.finderId || 'Unknown'}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div className="space-y-3">
-                            <Button size="lg" className="w-full h-12 text-lg shadow-sm">
-                                {item.type === 'lost' ? 'I Found This!' : 'This is Mine!'}
-                            </Button>
+                            {item.type === 'lost' ? (
+                                <Button size="lg" className="w-full h-12 text-lg shadow-sm" asChild>
+                                    <Link href={`/items/${item.id}/match`}>
+                                        I Found This!
+                                    </Link>
+                                </Button>
+                            ) : (
+                                <Button size="lg" className="w-full h-12 text-lg shadow-sm">
+                                    This is Mine!
+                                </Button>
+                            )}
                             <Button size="lg" variant="outline" className="w-full h-12">
                                 Contact {item.type === 'lost' ? 'Owner' : 'Finder'}
                             </Button>

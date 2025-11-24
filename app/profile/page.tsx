@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ItemCard } from '@/components/item-card';
 import { MOCK_USER, MOCK_ITEMS } from '@/lib/mock-data';
-import { Settings, LogOut, Edit2, Trash2 } from 'lucide-react';
+import { Settings, LogOut } from 'lucide-react';
 
 export default function ProfilePage() {
     const userItems = MOCK_ITEMS.filter(
