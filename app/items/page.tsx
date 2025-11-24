@@ -63,15 +63,12 @@ export default function BrowseItemsPage() {
                                 <SelectItem value="pets">Pets</SelectItem>
                             </SelectContent>
                         </Select>
-                        <Button variant="outline" size="icon" className="shrink-0 bg-background border-muted-foreground/20">
-                            <SlidersHorizontal className="w-4 h-4" />
-                        </Button>
                     </div>
                 </div>
             </div>
 
             <Tabs defaultValue="lost" className="w-full">
-                <TabsList className="grid w-full max-w-md grid-cols-2 mb-8 bg-muted/50 p-1">
+                <TabsList className="grid w-full max-w-md grid-cols-2 mb-8 bg-muted/50 p-1 mx-auto">
                     <TabsTrigger value="lost" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">Lost Items</TabsTrigger>
                     <TabsTrigger value="found" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">Found Items</TabsTrigger>
                 </TabsList>

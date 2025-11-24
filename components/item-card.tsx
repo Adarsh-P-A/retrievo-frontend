@@ -12,7 +12,7 @@ interface ItemCardProps {
 export function ItemCard({ item }: ItemCardProps) {
     return (
         <Card className="group overflow-hidden flex flex-col h-full border-muted hover:border-primary/50 transition-all hover:shadow-lg">
-            <div className="aspect-[4/3] w-full overflow-hidden bg-muted relative">
+            <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted group">
                 <img
                     src={item.image}
                     alt={item.title}
@@ -21,8 +21,8 @@ export function ItemCard({ item }: ItemCardProps) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <Badge
                     className={`absolute top-3 right-3 shadow-sm ${item.type === 'lost'
-                            ? 'bg-red-500/90 hover:bg-red-600 text-white border-red-600'
-                            : 'bg-green-500/90 hover:bg-green-600 text-white border-green-600'
+                        ? 'bg-red-500/90 hover:bg-red-600 text-white border-red-600'
+                        : 'bg-green-500/90 hover:bg-green-600 text-white border-green-600'
                         }`}
                 >
                     {item.type === 'lost' ? 'Lost' : 'Found'}

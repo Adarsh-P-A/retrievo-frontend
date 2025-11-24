@@ -53,10 +53,10 @@ export default function ProfilePage() {
                     </div>
 
                     <Tabs defaultValue="all" className="w-full">
-                        <TabsList className="mb-8 bg-muted/50 p-1 w-full sm:w-auto">
-                            <TabsTrigger value="all" className="flex-1 sm:flex-none">All Items</TabsTrigger>
-                            <TabsTrigger value="lost" className="flex-1 sm:flex-none">My Lost Reports</TabsTrigger>
-                            <TabsTrigger value="found" className="flex-1 sm:flex-none">My Found Reports</TabsTrigger>
+                        <TabsList className="flex w-full max-w-md mx-auto mb-8">
+                            <TabsTrigger value="all" className="flex-1">All</TabsTrigger>
+                            <TabsTrigger value="lost" className="flex-1">Lost</TabsTrigger>
+                            <TabsTrigger value="found" className="flex-1">Found</TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="all" className="space-y-6 animate-in fade-in-50 duration-500">
