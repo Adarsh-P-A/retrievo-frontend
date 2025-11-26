@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ItemCard } from '@/components/item-card';
 import { MOCK_ITEMS } from '@/lib/mock-data';
-import { Search, Filter, SlidersHorizontal } from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function BrowseItemsPage() {
