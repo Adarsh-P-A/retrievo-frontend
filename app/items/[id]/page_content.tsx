@@ -1,0 +1,161 @@
+import { notFound } from 'next/navigation';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { fetchFoundItems, fetchLostItems } from '@/lib/api';
+import { MapPin, Calendar, User, Share2, Flag } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+
+export default async function ItemPageContent({ id }: { id: string }) {
+    let item = null;
+
+    try {
+        const [lostData, foundData] = await Promise.all([
+            fetchLostItems(),
+            fetchFoundItems()
+        ]);
+
+        // Add type property to items since API might not return it
+        const lostItems = lostData.map((i: any) => ({ ...i, type: 'lost' }));
+        const foundItems = foundData.map((i: any) => ({ ...i, type: 'found' }));
+
+        const allItems = [...lostItems, ...foundItems];
+        // loose comparison for id in case of string/number mismatch
+        item = allItems.find((i: any) => i.id == id);
+    } catch (error) {
+        console.error("Failed to fetch item details:", error);
+    }
+
+    if (!item) {
+        notFound();
+    }
+
+    const rawDate = item.type === "lost" ? item.date_lost : item.date_found;
+    const date = new Date(rawDate).toLocaleDateString("en-GB").replace(/\//g, "-");
+
+    const formattedItem = {
+        ...item,
+        date: date,
+        location: item.type === "lost" ? item.location_lost : item.location_found,
+    };
+
+    return (
+        <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-4rem)]">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Left Column: Image */}
+                <div className="lg:col-span-2 space-y-6">
+                    <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-muted border shadow-sm group">
+                        <img
+                            src={item.image}
+                            alt={formattedItem.title}
+                            className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
+                        />
+                        <div className="absolute top-4 left-4">
+                            <Badge
+                                className={`text-lg px-4 py-1.5 shadow-md ${formattedItem.type === 'lost'
+                                    ? 'bg-red-500 hover:bg-red-600 border-red-600'
+                                    : 'bg-green-500 hover:bg-green-600 border-green-600'
+                                    }`}
+                            >
+                                {formattedItem.type === 'lost' ? 'Lost' : 'Found'}
+                            </Badge>
+                        </div>
+                    </div>
+
+                    <div className="hidden lg:block">
+                        <h3 className="text-lg font-semibold mb-3">Description</h3>
+                        <Card>
+                            <CardContent className="p-6">
+                                <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                                    {formattedItem.description}
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+
+                {/* Right Column: Details & Actions */}
+                <div className="space-y-6">
+                    <div>
+                        <h1 className="text-3xl font-bold mb-2 leading-tight">{formattedItem.title}</h1>
+                        <div className="flex items-center gap-2 text-muted-foreground mb-6">
+                            <span className="text-sm">Posted on {formattedItem.date}</span>
+                            <span>•</span>
+                            <Badge variant="outline" className="font-normal">{formattedItem.category}</Badge>
+                        </div>
+
+                        <div className="space-y-4 mb-8">
+                            <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/30 border">
+                                <MapPin className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+                                <div>
+                                    <p className="font-medium text-sm">Location</p>
+                                    <p className="text-muted-foreground text-sm">{formattedItem.location}</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/30 border">
+                                <Calendar className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+                                <div>
+                                    <p className="font-medium text-sm">Date {formattedItem.type === 'lost' ? 'Lost' : 'Found'}</p>
+                                    <p className="text-muted-foreground text-sm">{formattedItem.date}</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/30 border">
+                                <User className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+                                <div>
+                                    <p className="font-medium text-sm">Reported by</p>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <Avatar className="h-6 w-6">
+                                            <AvatarFallback className="text-[10px]">U</AvatarFallback>
+                                        </Avatar>
+                                        <p className="text-muted-foreground text-sm">{formattedItem.user_id}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-3">
+                            {item.type === 'lost' ? (
+                                <Button size="lg" className="w-full h-12 text-lg shadow-sm" asChild>
+                                    <Link href={`/items/${item.id}/match`}>
+                                        I Found This!
+                                    </Link>
+                                </Button>
+                            ) : (
+                                <Button size="lg" className="w-full h-12 text-lg shadow-sm">
+                                    This is Mine!
+                                </Button>
+                            )}
+                            <Button size="lg" variant="outline" className="w-full h-12">
+                                Contact {item.type === 'lost' ? 'Owner' : 'Finder'}
+                            </Button>
+                            <div className="grid grid-cols-2 gap-3 pt-2">
+                                <Button variant="ghost" size="sm" className="w-full text-muted-foreground">
+                                    <Share2 className="w-4 h-4 mr-2" />
+                                    Share
+                                </Button>
+                                <Button variant="ghost" size="sm" className="w-full text-muted-foreground hover:text-destructive">
+                                    <Flag className="w-4 h-4 mr-2" />
+                                    Report
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="lg:hidden">
+                        <h3 className="text-lg font-semibold mb-3">Description</h3>
+                        <Card>
+                            <CardContent className="p-6">
+                                <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                                    {item.description}
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}

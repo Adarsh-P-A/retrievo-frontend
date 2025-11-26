@@ -30,6 +30,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
+import { postLostFoundItem } from '@/lib/api';
 
 const formSchema = z.object({
     title: z.string().min(2, {
@@ -47,7 +49,7 @@ const formSchema = z.object({
     location: z.string().min(2, {
         message: "Location must be at least 2 characters.",
     }),
-    image: z.any().optional(),
+    image: z.any()
 });
 
 interface ItemFormProps {
@@ -56,6 +58,7 @@ interface ItemFormProps {
 
 export function ItemForm({ type }: ItemFormProps) {
     const [preview, setPreview] = useState<string | null>(null);
+    const router = useRouter();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -66,9 +69,29 @@ export function ItemForm({ type }: ItemFormProps) {
         },
     });
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values);
-        alert(`Reported ${type} item: ${values.title}`);
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        if (!type) return;
+
+        // Prepare form-data
+        const formData = new FormData();
+        Object.entries(values).forEach(([key, val]) => {
+            if (val instanceof Date) {
+                formData.append(key, val.toISOString());
+            } else {
+                formData.append(key, val as any);
+            }
+        });
+
+        // Send to API
+        const res = await postLostFoundItem(type, formData);
+
+        // Handle response
+        if (res.ok) {
+            alert(`Reported ${type} item: ${formData.get("title")}`);
+            router.push("/items");
+        } else {
+            alert("Error: " + res.error);
+        }
     }
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -173,7 +196,7 @@ export function ItemForm({ type }: ItemFormProps) {
                                                         selected={field.value}
                                                         onSelect={field.onChange}
                                                         disabled={(date) =>
-                                                            date > new Date() || date < new Date("1900-01-01")
+                                                            date > new Date() || date < new Date("2000-01-01")
                                                         }
                                                     />
                                                 </PopoverContent>
