@@ -48,18 +48,8 @@ export default function ClientMatchPage({ lostItem, userFoundItems, itemId }: Cl
         <div className="min-h-screen bg-muted/30">
             {/* Header Section */}
             <div className="border-b sticky top-0 backdrop-blur-xl bg-background/80">
-                <div className="container mx-auto px-4 h-16 flex items-center justify-between max-w-6xl">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="-ml-2 text-muted-foreground hover:text-foreground"
-                        onClick={() => router.back()}
-                    >
-                        <ArrowLeft className="w-4 h-4 mr-2" />
-                        Back
-                    </Button>
+                <div className="container mx-auto px-4 h-16 flex items-center justify-center max-w-6xl">
                     <h1 className="font-semibold text-lg">Suggest a Match</h1>
-                    <div className="w-16" />
                 </div>
             </div>
 

@@ -38,13 +38,13 @@ export function ProfileClient({ session, userItems, lostItems, foundItems }: Pro
                                 <p className="text-sm text-muted-foreground">{session.user.email}</p>
                             </CardHeader>
                             <CardContent className="space-y-2 p-4">
-                                <Button variant="outline" className="w-full justify-start h-10">
+                                {/* <Button variant="outline" className="w-full justify-start h-10">
                                     <Settings className="mr-2 h-4 w-4" />
                                     Edit Profile
-                                </Button>
+                                </Button> */}
                                 <Button
                                     variant="ghost"
-                                    className="w-full justify-start h-10 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                    className="w-full justify-start h-10 cursor-pointer text-destructive hover:text-destructive hover:bg-destructive/10"
                                     onClick={() => signOut({ callbackUrl: '/' })}
                                 >
                                     <LogOut className="mr-2 h-4 w-4" />
