@@ -50,8 +50,8 @@ export function ItemsBrowse({ initialLostItems, initialFoundItems }: ItemsBrowse
         });
     };
 
-    const filteredLostItems = initialLostItems.map(formatItem);
-    const filteredFoundItems = initialFoundItems.map(formatItem);
+    const filteredLostItems = filterItems(initialLostItems).map(formatItem);
+    const filteredFoundItems = filterItems(initialFoundItems).map(formatItem);
 
     return (
         <>
