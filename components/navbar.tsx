@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Search, PlusCircle } from 'lucide-react';
 import { UserMenu } from '@/components/user-menu';
 import { auth, signIn } from "@/auth";
+import { SignInButton } from './sign-in-button';
 
 export async function Navbar() {
     const session = await auth()
@@ -36,20 +36,7 @@ export async function Navbar() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    {session?.user ? (
-                        <UserMenu user={session.user} />
-                    ) : (
-                        <form
-                            action={async () => {
-                                "use server"
-                                await signIn("google")
-                            }}
-                        >
-                            <Button variant="outline" size="sm">
-                                Sign In
-                            </Button>
-                        </form>
-                    )}
+                    <SignInButton session={session} />
                 </div>
             </div>
         </nav>

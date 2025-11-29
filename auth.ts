@@ -8,66 +8,66 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         }),
     ],
-    // callbacks: {
-    //     async jwt({ token, account, profile }) {
-    //         // When user signs in, send their info to the backend to get a JWT
-    //         if (account && profile) {
-    //             // Store profile info in the token
-    //             token.email = profile.email;
-    //             token.name = profile.name;
-    //             token.picture = (profile as any).picture;
+    session: { strategy: "jwt" },
+    callbacks: {
+        async signIn({ profile }) {
+            if (!profile?.email) return "/auth/error?error=NoEmail";
 
-    //             console.log('JWT callback - Account:', account, 'Profile:', profile);
+            // BLOCK non-NITC emails BEFORE creating a session
+            const allowedDomain = "nitc.ac.in";
+            const email = profile.email.toLowerCase();
 
-    //             // Try to get backend token, but don't fail if backend is down
-    //             try {
-    //                 console.log('Attempting to fetch backend token from:', process.env.BACKEND_URL);
-    //                 const response = await fetch(`${process.env.BACKEND_URL}/auth/google`, {
-    //                     method: 'POST',
-    //                     headers: {
-    //                         'Content-Type': 'application/json',
-    //                     },
-    //                     body: JSON.stringify({
-    //                         email: profile.email,
-    //                         name: profile.name,
-    //                         picture: (profile as any).picture,
-    //                         google_id: profile.sub,
-    //                     }),
-    //                 });
+            if (!email.endsWith(`@${allowedDomain}`)) return "/auth/error?error=AccessDenied";
 
-    //                 if (response.ok) {
-    //                     const data = await response.json();
-    //                     token.backendToken = data.access_token;
-    //                     token.userId = data.user_id;
-    //                     console.log('Backend token received successfully');
-    //                 } else {
-    //                     console.warn('Backend returned non-OK status:', response.status);
-    //                 }
-    //             } catch (error) {
-    //                 console.error('Failed to authenticate with backend:', error);
-    //                 console.log('Continuing without backend token - user can still sign in');
-    //             }
-    //         }
-    //         return token;
-    //     },
-    //     async session({ session, token }) {
-    //         console.log('Session callback - Token:', !!token);
+            const res = await fetch(`${process.env.BACKEND_URL}/auth/google`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: profile.email,
+                    name: profile.name,
+                    picture: profile.picture,
+                    google_id: profile.sub,
+                }),
+            });
 
-    //         // Pass the backend JWT token to the client session
-    //         if (token.backendToken) {
-    //             session.backendToken = token.backendToken as string;
-    //             session.userId = token.userId as string;
-    //         }
+            if (!res.ok) return "/auth/error?error=BackendAuthFailed";
 
-    //         // Ensure user info is always available in session
-    //         if (session.user) {
-    //             session.user.email = token.email as string;
-    //             session.user.name = token.name as string;
-    //             session.user.image = token.picture as string;
-    //         }
+            const data = await res.json();
 
-    //         console.log('Session callback - User:', session.user?.email);
-    //         return session;
-    //     },
-    // },
+            profile.backendToken = data.access_token;
+            profile.backendUserId = data.user_id;
+
+            return true;
+        },
+
+        async jwt({ token, account, profile }) {
+            if (account && profile) {
+                token.email = profile.email;
+                token.name = profile.name;
+                token.picture = profile.picture;
+
+                token.backendToken = profile.backendToken;
+                token.userId = profile.backendUserId;
+            }
+
+            return token;
+        },
+
+        async session({ session, token }) {
+            // Attach backend token and userId to session
+            session.backendToken = token.backendToken as string;
+            session.userId = token.userId as string;
+
+            // Update user properties
+            session.user.email = token.email!;
+            session.user.name = token.name!;
+            session.user.image = token.picture!;
+            session.user.id = token.sub!;
+
+            return session;
+        },
+    },
+    pages: {
+        error: 'auth/error',
+    }
 });
