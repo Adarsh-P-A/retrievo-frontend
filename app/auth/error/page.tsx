@@ -135,7 +135,7 @@ function AuthErrorContent() {
                 <CardContent className="text-center text-muted-foreground text-sm p-8 pt-2 pb-6">
                     {error && (
                         <div className="text-xs font-mono bg-muted/50 px-3 py-2 rounded border mb-4 inline-block">
-                            Error Code: {error}
+                            Error Code: {String(error).replace(/[<>]/g, '')}
                         </div>
                     )}
                     <p>If this problem persists, please contact support.</p>
