@@ -1,45 +1,12 @@
-import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { fetchFoundItems, fetchLostItems } from '@/lib/api';
 import { MapPin, Calendar, User, Share2, Flag } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Item } from '@/types/items';
 
-export default async function ItemPageContent({ id }: { id: string }) {
-    let item = null;
-
-    try {
-        const [lostData, foundData] = await Promise.all([
-            fetchLostItems(),
-            fetchFoundItems()
-        ]);
-
-        // Add type property to items since API might not return it
-        const lostItems = lostData.map((i: any) => ({ ...i, type: 'lost' }));
-        const foundItems = foundData.map((i: any) => ({ ...i, type: 'found' }));
-
-        const allItems = [...lostItems, ...foundItems];
-        // loose comparison for id in case of string/number mismatch
-        item = allItems.find((i: any) => i.id == id);
-    } catch (error) {
-        console.error("Failed to fetch item details:", error);
-    }
-
-    if (!item) {
-        notFound();
-    }
-
-    const rawDate = item.type === "lost" ? item.date_lost : item.date_found;
-    const date = new Date(rawDate).toLocaleDateString("en-GB").replace(/\//g, "-");
-
-    const formattedItem = {
-        ...item,
-        date: date,
-        location: item.type === "lost" ? item.location_lost : item.location_found,
-    };
-
+export default async function ItemPageContent({ formattedItem }: { formattedItem: Item }) {
     return (
         <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-4rem)]">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -47,7 +14,7 @@ export default async function ItemPageContent({ id }: { id: string }) {
                 <div className="lg:col-span-2 space-y-6">
                     <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-muted border shadow-sm group">
                         <img
-                            src={item.image}
+                            src={formattedItem.image}
                             alt={formattedItem.title}
                             className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
                         />
@@ -117,9 +84,9 @@ export default async function ItemPageContent({ id }: { id: string }) {
                         </div>
 
                         <div className="space-y-3">
-                            {item.type === 'lost' ? (
+                            {formattedItem.type === 'lost' ? (
                                 <Button size="lg" className="w-full h-12 text-lg shadow-sm" asChild>
-                                    <Link href={`/items/${item.id}/match`}>
+                                    <Link href={`/items/${formattedItem.id}/match`}>
                                         I Found This!
                                     </Link>
                                 </Button>
@@ -129,7 +96,7 @@ export default async function ItemPageContent({ id }: { id: string }) {
                                 </Button>
                             )}
                             <Button size="lg" variant="outline" className="w-full h-12">
-                                Contact {item.type === 'lost' ? 'Owner' : 'Finder'}
+                                Contact {formattedItem.type === 'lost' ? 'Owner' : 'Finder'}
                             </Button>
                             <div className="grid grid-cols-2 gap-3 pt-2">
                                 <Button variant="ghost" size="sm" className="w-full text-muted-foreground">
@@ -149,7 +116,7 @@ export default async function ItemPageContent({ id }: { id: string }) {
                         <Card>
                             <CardContent className="p-6">
                                 <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
-                                    {item.description}
+                                    {formattedItem.description}
                                 </p>
                             </CardContent>
                         </Card>

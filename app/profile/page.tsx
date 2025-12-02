@@ -1,26 +1,35 @@
-import { MOCK_ITEMS } from '@/lib/mock-data';
 import { auth } from '@/auth';
+import { ProfileClient } from '@/app/profile/profile-client';
+import { fetchAllUserItems, UnauthorizedError } from '@/lib/api';
+import { Item } from '@/types/items';
 import { redirect } from 'next/navigation';
-import { ProfileClient } from '@/components/profile-client';
 
 export default async function ProfilePage() {
     const session = await auth();
 
     if (!session) {
-        redirect('/api/auth/signin?callbackUrl=/profile')
+        redirect('/auth/signin?callbackUrl=/profile');
     }
 
-    const userItems = MOCK_ITEMS.filter(
-        (item) => item.ownerId === session.user.id || item.finderId === session.user.id
-    );
+    let foundItems: Item[] = [];
+    let lostItems: Item[] = [];
 
-    const lostItems = userItems.filter((item) => item.type === 'lost');
-    const foundItems = userItems.filter((item) => item.type === 'found');
+    try {
+        const data = await fetchAllUserItems(session.backendToken);
+
+        foundItems = data.found_items;
+        lostItems = data.lost_items;
+    } catch (err) {
+        if (err instanceof UnauthorizedError) {
+            redirect('/auth/signin?callbackUrl=/profile');
+        }
+
+        throw err;
+    }
 
     return (
         <ProfileClient
             session={session}
-            userItems={userItems}
             lostItems={lostItems}
             foundItems={foundItems}
         />

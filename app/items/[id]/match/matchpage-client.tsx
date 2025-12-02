@@ -5,15 +5,15 @@ import { useRouter } from "next/navigation";
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Check, Send, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
-import { Item } from "@/lib/mock-data";
+import { Item } from "@/types/items";
 
 interface ClientMatchPageProps {
-    lostItem: Item;
+    // lostItem: Item;
     userFoundItems: Item[];
     itemId: string;
 }
 
-export default function ClientMatchPage({ lostItem, userFoundItems, itemId }: ClientMatchPageProps) {
+export default function ClientMatchPage({ userFoundItems, itemId }: ClientMatchPageProps) {
     const router = useRouter();
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);

@@ -15,8 +15,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { useRouter } from 'next/navigation';
-import { postLostFoundItem } from '@/lib/api';
+import { redirect, useRouter } from 'next/navigation';
+import { postLostFoundItem, UnauthorizedError } from '@/lib/api';
 import { signIn } from "next-auth/react";
 import type { Session } from 'next-auth';
 
@@ -41,7 +41,7 @@ const formSchema = z.object({
 
 interface ItemFormClientProps {
     type: 'lost' | 'found';
-    session: Session | null;
+    session: Session;
 }
 
 export function ItemFormClient({ type, session }: ItemFormClientProps) {
@@ -61,9 +61,9 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         if (!type) return;
 
-        setIsSubmitting(true);
-
         try {
+            setIsSubmitting(true);
+
             // Prepare form-data
             const formData = new FormData();
             Object.entries(values).forEach(([key, val]) => {
@@ -74,22 +74,21 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
                 }
             });
 
-            // Add user ID to form data
-            formData.append('user_id', session?.userId);
+            const res = await postLostFoundItem(type, formData, session.backendToken);
 
-            // Send to API
-            const res = await postLostFoundItem(type, formData, session?.backendToken);
-
-            // Handle response
-            if (res.ok) {
-                router.push("/items");
-            } else {
-                console.error("API Error:", res.error);
-                alert("Failed to submit report. Please try again.");
+            // If response is not ok (but not unauthorized)
+            if (!res.ok) {
+                throw new Error("Submit failed");
             }
+
+            redirect("/items");
+
         } catch (error) {
-            console.error("Submit error:", error);
-            alert("An error occurred. Please try again.");
+            if (error instanceof UnauthorizedError) {
+                redirect(`/auth/signin?callbackUrl=/${type}/new`);
+            }
+
+            throw error;
         } finally {
             setIsSubmitting(false);
         }

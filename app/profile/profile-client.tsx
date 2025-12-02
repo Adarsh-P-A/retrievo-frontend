@@ -5,18 +5,32 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ItemCard } from '@/components/item-card';
-import { Settings, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import type { Session } from 'next-auth';
+import { Item } from '@/types/items';
 
 interface ProfileClientProps {
     session: Session;
-    userItems: any[];
-    lostItems: any[];
-    foundItems: any[];
+    lostItems: Item[];
+    foundItems: Item[];
 }
 
-export function ProfileClient({ session, userItems, lostItems, foundItems }: ProfileClientProps) {
+export function ProfileClient({ session, lostItems, foundItems }: ProfileClientProps) {
+    const formattedLost = lostItems.map(item => ({
+        ...item,
+        type: 'lost' as const
+    }));
+
+    const formattedFound = foundItems.map(item => ({
+        ...item,
+        type: 'found' as const
+    }));
+
+    const userItems = [...formattedLost, ...formattedFound].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+
     return (
         <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-4rem)]">
             <div className="flex flex-col md:flex-row gap-8">
@@ -73,7 +87,7 @@ export function ProfileClient({ session, userItems, lostItems, foundItems }: Pro
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {userItems.map((item) => (
                                         <div key={item.id} className="relative group">
-                                            <ItemCard item={item} />
+                                            <ItemCard item={item} type={item.type} />
                                         </div>
                                     ))}
                                 </div>
@@ -88,7 +102,7 @@ export function ProfileClient({ session, userItems, lostItems, foundItems }: Pro
                             {lostItems.length > 0 ? (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {lostItems.map((item) => (
-                                        <ItemCard key={item.id} item={item} />
+                                        <ItemCard key={item.id} item={item} type="lost" />
                                     ))}
                                 </div>
                             ) : (
@@ -102,7 +116,7 @@ export function ProfileClient({ session, userItems, lostItems, foundItems }: Pro
                             {foundItems.length > 0 ? (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {foundItems.map((item) => (
-                                        <ItemCard key={item.id} item={item} />
+                                        <ItemCard key={item.id} item={item} type="found" />
                                     ))}
                                 </div>
                             ) : (

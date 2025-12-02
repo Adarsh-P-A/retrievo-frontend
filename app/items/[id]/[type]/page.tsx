@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import ItemPageContent from "./[type]/page_content";
-import Loading from "../loading";
+import ItemPageContent from "./page_content";
+import Loading from "../../loading";
 import { notFound } from "next/navigation";
 import { fetchItem } from "@/lib/api";
 
@@ -15,6 +15,7 @@ export default async function ItemPage({ params }: { params: Promise<{ id: strin
 
     const formattedItem = {
         ...item,
+        type: type,
         date: new Date(item.date).toLocaleDateString("en-GB").replace(/\//g, "-"),
     };
 

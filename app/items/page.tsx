@@ -1,19 +1,14 @@
-import { fetchFoundItems, fetchLostItems } from '@/lib/api';
-import { ItemsBrowse } from './items-browse';
+import { fetchAllItems } from '@/lib/api';
+import { ItemsClient } from './items-client';
+import { Item } from '@/types/items';
 
 
 export default async function BrowseItemsPage() {
-    let lostItems = [];
-    let foundItems = [];
+    const { lost_items, found_items } = await fetchAllItems();
 
-    try {
-        [lostItems, foundItems] = await Promise.all([
-            fetchLostItems(),
-            fetchFoundItems()
-        ]);
-    } catch (error) {
-        console.error("Failed to fetch items from API:", error);
-    }
+    const lostItems: Item[] = lost_items ?? [];
+    const foundItems: Item[] = found_items ?? [];
+
 
     return (
         <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-4rem)]">
@@ -28,7 +23,7 @@ export default async function BrowseItemsPage() {
                 </div>
             </div>
 
-            <ItemsBrowse initialLostItems={lostItems} initialFoundItems={foundItems} />
+            <ItemsClient initialLostItems={lostItems} initialFoundItems={foundItems} />
         </div>
     );
 }

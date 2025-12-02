@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Search, PlusCircle } from 'lucide-react';
-import { UserMenu } from '@/components/user-menu';
-import { auth, signIn } from "@/auth";
+import { auth } from "@/auth";
 import { SignInButton } from './sign-in-button';
 
 export async function Navbar() {

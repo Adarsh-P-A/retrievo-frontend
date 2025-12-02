@@ -7,32 +7,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ItemCard } from '@/components/item-card';
 import { Search, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Item } from '@/types/items';
 
 interface ItemsBrowseProps {
-    initialLostItems: any[];
-    initialFoundItems: any[];
+    initialLostItems: Item[];
+    initialFoundItems: Item[];
 }
 
 // Helper function to format item data
-function formatItem(item: any) {
-    const rawDate =
-        item.type === "lost"
-            ? item.date_lost
-            : item.date_found;
-
-    const formattedDate = new Date(rawDate)
+function formatItem(item: Item) {
+    const formattedDate = new Date(item.date)
         .toLocaleDateString("en-GB")
         .replace(/\//g, "-");
 
     return {
         ...item,
         date: formattedDate,
-        location: item.type === "lost" ? item.location_lost : item.location_found,
-        category: item.category,
     };
 }
 
-export function ItemsBrowse({ initialLostItems, initialFoundItems }: ItemsBrowseProps) {
+export function ItemsClient({ initialLostItems, initialFoundItems }: ItemsBrowseProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('all');
 
@@ -97,7 +91,7 @@ export function ItemsBrowse({ initialLostItems, initialFoundItems }: ItemsBrowse
                     {filteredLostItems.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                             {filteredLostItems.map(item => (
-                                <ItemCard key={item.id} item={item} />
+                                <ItemCard key={item.id} item={item} type="lost" />
                             ))}
                         </div>
                     ) : (
@@ -120,7 +114,7 @@ export function ItemsBrowse({ initialLostItems, initialFoundItems }: ItemsBrowse
                     {filteredFoundItems.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                             {filteredFoundItems.map(item => (
-                                <ItemCard key={item.id} item={item} />
+                                <ItemCard key={item.id} item={item} type="found" />
                             ))}
                         </div>
                     ) : (
