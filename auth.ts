@@ -14,10 +14,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             if (!profile?.email) return "/auth/error?error=NoEmail";
 
             // Domain check
-            const allowedDomain = "nitc.ac.in";
             const email = profile.email.toLowerCase();
 
-            if (!email.endsWith(`@${allowedDomain}`)) {
+            if (!email.endsWith('nitc.ac.in')) {
                 return "/auth/error?error=AccessDenied";
             }
 
@@ -26,22 +25,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 return "/auth/error?error=MissingIdToken";
             }
 
-            // Send ID token to backend for proper verification
-            const res = await fetch(`${process.env.BACKEND_URL}/auth/google`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id_token: account.id_token })
-            });
+            try {
+                const res = await fetch(`${process.env.BACKEND_URL}/auth/google`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id_token: account.id_token })
+                });
 
-            if (!res.ok) return "/auth/error?error=BackendAuthFailed";
+                if (!res.ok) {
+                    // Backend reachable, but rejected
+                    return "/auth/error?error=BackendAuthFailed";
+                }
 
-            const data = await res.json();
+                const data = await res.json();
 
-            // Store backend data in account (not profile)
-            account.backendToken = data.access_token;
-            account.backendUserId = data.user_id;
+                // Attach to account
+                account.backendToken = data.access_token;
+                account.backendUserId = data.user_id;
 
-            return true;
+                return true;  // allow login
+            }
+            catch (err) {
+                console.error("Backend unreachable:", err);
+                return "/auth/error?error=BackendAuthFailed";
+            }
         },
 
         async jwt({ token, account, profile }) {

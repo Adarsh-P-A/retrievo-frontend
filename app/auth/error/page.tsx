@@ -96,16 +96,6 @@ function AuthErrorContent() {
                 variant: "outline"
             }
         },
-        OAuthCallback: {
-            title: "Authentication Callback Error",
-            message: "Something went wrong during the sign-in process. Please try again.",
-            icon: AlertCircle,
-            actionButton: {
-                label: "Start Over",
-                href: "/auth/signin",
-                variant: "outline"
-            }
-        },
         Default: {
             title: "Authentication Error",
             message: "An unexpected error occurred while trying to sign you in. Please try again.",
