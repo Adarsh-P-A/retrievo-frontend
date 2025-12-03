@@ -76,9 +76,8 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
 
             const res = await postLostFoundItem(type, formData, session.backendToken);
 
-            // If response is not ok (but not unauthorized)
-            if (!res.ok) {
-                throw new Error("Submit failed");
+            if (res.ok === false) {
+                throw new Error(`Failed to submit item. Status: ${res.status}`);
             }
 
             redirect("/items");

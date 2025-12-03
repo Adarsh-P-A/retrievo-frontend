@@ -74,12 +74,12 @@ export default function ClientMatchPage({ userFoundItems, itemId }: ClientMatchP
                     {userFoundItems.length > 0 ? (
                         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                             {userFoundItems.map((item) => {
-                                const isSelected = selectedItemId === item.id;
+                                const isSelected = selectedItemId === item.reporter_public_id;
 
                                 return (
                                     <div
-                                        key={item.id}
-                                        onClick={() => setSelectedItemId(item.id)}
+                                        key={item.reporter_public_id}
+                                        onClick={() => setSelectedItemId(item.reporter_public_id)}
                                         className={`
                                             group relative cursor-pointer rounded-xl border bg-card transition-all duration-200 overflow-hidden
                                             ${isSelected

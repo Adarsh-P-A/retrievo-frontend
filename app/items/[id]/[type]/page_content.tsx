@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Calendar, User, Share2, Flag } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Item } from '@/types/items';
 
 export default async function ItemPageContent({ formattedItem }: { formattedItem: Item }) {
@@ -75,9 +75,12 @@ export default async function ItemPageContent({ formattedItem }: { formattedItem
                                     <p className="font-medium text-sm">Reported by</p>
                                     <div className="flex items-center gap-2 mt-1">
                                         <Avatar className="h-6 w-6">
-                                            <AvatarFallback className="text-[10px]">U</AvatarFallback>
+                                            <AvatarImage src={formattedItem.reporter_picture} alt={formattedItem.reporter_name} />
+                                            <AvatarFallback className="text-[10px]">
+                                                {formattedItem.reporter_name?.[0] ?? "U"}
+                                            </AvatarFallback>
                                         </Avatar>
-                                        <p className="text-muted-foreground text-sm">{formattedItem.user_id}</p>
+                                        <p className="text-muted-foreground text-sm">{formattedItem.reporter_name}</p>
                                     </div>
                                 </div>
                             </div>
@@ -86,7 +89,7 @@ export default async function ItemPageContent({ formattedItem }: { formattedItem
                         <div className="space-y-3">
                             {formattedItem.type === 'lost' ? (
                                 <Button size="lg" className="w-full h-12 text-lg shadow-sm" asChild>
-                                    <Link href={`/items/${formattedItem.id}/match`}>
+                                    <Link href={`/items/${formattedItem.reporter_public_id}/match`}>
                                         I Found This!
                                     </Link>
                                 </Button>

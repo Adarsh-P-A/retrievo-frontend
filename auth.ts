@@ -38,20 +38,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             const data = await res.json();
 
             // Store backend data in account (not profile)
-            profile.backendToken = data.access_token;
-            profile.backendUserId = data.user_id;
+            account.backendToken = data.access_token;
+            account.backendUserId = data.user_id;
 
             return true;
         },
 
         async jwt({ token, account, profile }) {
+            // On initial sign in, account and profile are available
             if (account && profile) {
                 token.email = profile.email;
                 token.name = profile.name;
                 token.picture = profile.picture;
 
-                token.backendToken = profile.backendToken;
-                token.userId = profile.backendUserId;
+                token.backendToken = account.backendToken;
+                token.userId = account.backendUserId;
             }
 
             return token;

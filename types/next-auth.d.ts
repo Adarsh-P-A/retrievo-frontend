@@ -11,6 +11,11 @@ declare module "next-auth" {
         backendToken?: string;
         userId?: string;
     }
+
+    interface Account {
+        backendToken?: string;
+        backendUserId?: string;
+    }
 }
 
 declare module "next-auth/jwt" {

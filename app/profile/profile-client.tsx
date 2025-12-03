@@ -42,7 +42,10 @@ export function ProfileClient({ session, lostItems, foundItems }: ProfileClientP
                             <CardHeader className="text-center -mt-12 relative z-10">
                                 <div className="mx-auto mb-4 p-1 bg-background rounded-full w-fit">
                                     <Avatar className="w-24 h-24 border-2 border-background">
-                                        <AvatarImage src={session.user.image || ''} alt={session.user.name || ''} />
+                                        <AvatarImage
+                                            src={session.user.image || ""}
+                                            alt={session.user.name || ""}
+                                        />
                                         <AvatarFallback>
                                             {session.user.name ? session.user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
                                         </AvatarFallback>
@@ -86,7 +89,7 @@ export function ProfileClient({ session, lostItems, foundItems }: ProfileClientP
                             {userItems.length > 0 ? (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {userItems.map((item) => (
-                                        <div key={item.id} className="relative group">
+                                        <div key={item.reporter_public_id} className="relative group">
                                             <ItemCard item={item} type={item.type} />
                                         </div>
                                     ))}
@@ -102,7 +105,7 @@ export function ProfileClient({ session, lostItems, foundItems }: ProfileClientP
                             {lostItems.length > 0 ? (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {lostItems.map((item) => (
-                                        <ItemCard key={item.id} item={item} type="lost" />
+                                        <ItemCard key={item.reporter_public_id} item={item} type="lost" />
                                     ))}
                                 </div>
                             ) : (
@@ -116,7 +119,7 @@ export function ProfileClient({ session, lostItems, foundItems }: ProfileClientP
                             {foundItems.length > 0 ? (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {foundItems.map((item) => (
-                                        <ItemCard key={item.id} item={item} type="found" />
+                                        <ItemCard key={item.reporter_public_id} item={item} type="found" />
                                     ))}
                                 </div>
                             ) : (
