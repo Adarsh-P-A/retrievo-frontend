@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { MOCK_USER } from '@/lib/mock-data';
 import { Search, PlusCircle } from 'lucide-react';
 
@@ -33,6 +34,7 @@ export function Navbar() {
                 </div>
 
                 <div className="flex items-center gap-4">
+                    <ThemeToggle />
                     <Link href="/profile">
                         <Avatar className="h-9 w-9 border-2 border-background ring-2 ring-muted hover:ring-primary transition-all">
                             <AvatarImage src={MOCK_USER.avatar} alt={MOCK_USER.name} />

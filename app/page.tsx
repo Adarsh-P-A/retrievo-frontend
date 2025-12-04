@@ -15,7 +15,7 @@ export default function Home() {
       const scrollY = window.scrollY;
       const factor = Math.min(scrollY / 400, 1);
 
-      glow.style.height = 300 - factor * 300 + "px";
+      glow.style.height = 300 - factor * 200 + "px";
       glow.style.opacity = (1 - factor).toString();
     };
 
@@ -25,22 +25,11 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-4rem)]">
-
+      
       {/* Hero Section */}
       <section className="relative flex-1 flex flex-col items-center justify-center py-24 px-4 text-center overflow-hidden">
+          <div className="overflow-hidden">
 
-        
-        
-
-        {/*Glow element with animation */}
-        <div
-          id="scrollGlow"
-          className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 
-                     w-[120%] h-[200px]
-                     bg-[radial-gradient(ellipse_at_bottom,rgba(130,130,200,0.45),transparent_70%)]
-                     dark:bg-[radial-gradient(ellipse_at_bottom,rgba(93,96,241,0.35),transparent_70%)]
-                     opacity-40 transition-all duration-300"
-        ></div>
 
         <div className="max-w-4xl space-y-8 relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
           <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary/10 text-primary hover:bg-primary/20 mb-4">
@@ -83,6 +72,16 @@ export default function Home() {
             </Button>
           </div>
         </div>
+        </div>
+         {/*Glow element with animation */}
+        <div
+          id="scrollGlow"
+          className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 
+                     w-[120%] h-[300px]
+                     
+                     dark:bg-[radial-gradient(ellipse_at_bottom,rgba(93,96,241,0.35),transparent_70%)]
+                     opacity-100 transition-all duration-300"
+        ></div>
       </section>
 
       {/* Features Section */}
