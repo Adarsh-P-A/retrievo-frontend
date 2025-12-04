@@ -1,14 +1,14 @@
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
-import ClientMatchPage from '@/app/items/[id]/match/matchpage-client';
+import ClientMatchPage from '@/app/items/[id]/category/[category]/match/matchpage-client';
 import { fetchFoundUserItems, UnauthorizedError } from '@/lib/api';
 
-export default async function MatchPage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = await params;
+export default async function MatchPage({ params }: { params: Promise<{ id: string, category: string }> }) {
+    const { id, category } = await params;
     const session = await auth();
 
     if (!session) {
-        redirect(`/auth/signin?callbackUrl=/items/${id}/match`);
+        redirect(`/auth/signin?callbackUrl=/items/${id}/category/${category}/match`);
     }
 
     let userFoundItems;

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Check, Send, AlertCircle } from 'lucide-react';
+import { Check, Send, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { Item } from "@/types/items";
 
