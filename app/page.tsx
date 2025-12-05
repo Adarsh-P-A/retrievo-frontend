@@ -6,31 +6,40 @@ import { Button } from '@/components/ui/button';
 import { Search, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react';
 
 export default function Home() {
-  
   useEffect(() => {
     const glow = document.getElementById("scrollGlow");
     if (!glow) return;
 
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const factor = Math.min(scrollY / 400, 1);
+    let ticking = false;
 
-      glow.style.height = 300 - factor * 100 + "px";
-      glow.style.opacity = (1 - factor*0.5).toString();
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          const factor = Math.min(scrollY / 400, 1);
+
+          glow.style.height = `${300 - factor * 100}px`;
+          glow.style.opacity = `${1 - factor * 0.5}`;
+
+          ticking = false;
+        });
+
+        ticking = true;
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-4rem)]">
-      
+
       {/* Hero Section */}
       <section className="relative flex-1 flex flex-col items-center justify-center py-24 px-4 text-center overflow-hidden">
-          <div className="overflow-hidden">
-
-
         <div className="max-w-4xl space-y-8 relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
           <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary/10 text-primary hover:bg-primary/20 mb-4">
             New: Community Rewards Program
@@ -72,23 +81,20 @@ export default function Home() {
             </Button>
           </div>
         </div>
-        </div>
-         {/*Glow element with animation */}
+        {/*Glow element with animation */}
         <div
           id="scrollGlow"
           className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 
-                     w-[120%] h-[300px]
-                     
-                     dark:bg-[radial-gradient(ellipse_at_bottom,rgba(93,96,241,0.35),transparent_70%)]
-                    blur-3xl opacity-100 transition-all duration-300"
-        ></div>
-      </section>
+                     w-[120%] h-[300px] dark:bg-[radial-gradient(ellipse_at_bottom,rgba(93,96,241,0.35),transparent_70%)] blur-3xl opacity-100 transition-all duration-300">
+
+        </div>
+      </section >
 
       {/* Features Section */}
-      <section className="py-24 bg-muted/30 border-t">
+      < section className="py-24 bg-muted/30 border-t" >
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            
+
             <div className="group p-8 rounded-2xl bg-background border shadow-sm hover:shadow-md transition-all hover:-translate-y-1">
               <div className="w-14 h-14 bg-red-100 text-red-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <AlertCircle className="w-7 h-7" />
@@ -121,7 +127,7 @@ export default function Home() {
 
           </div>
         </div>
-      </section>
-    </div>
+      </section >
+    </div >
   );
 }

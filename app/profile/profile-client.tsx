@@ -9,6 +9,7 @@ import { LogOut } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import type { Session } from 'next-auth';
 import { Item } from '@/types/items';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 interface ProfileClientProps {
     session: Session;
@@ -59,6 +60,7 @@ export function ProfileClient({ session, lostItems, foundItems }: ProfileClientP
                                     <Settings className="mr-2 h-4 w-4" />
                                     Edit Profile
                                 </Button> */}
+                                <ThemeToggle />
                                 <Button
                                     variant="ghost"
                                     className="w-full justify-start h-10 cursor-pointer text-destructive hover:text-destructive hover:bg-destructive/10"
