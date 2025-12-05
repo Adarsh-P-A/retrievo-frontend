@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '@/components/theme-toggle';
 import { Search, PlusCircle } from 'lucide-react';
 import { auth } from "@/auth";
 import { SignInButton } from './sign-in-button';
@@ -36,7 +35,6 @@ export async function Navbar() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <ThemeToggle />
                     <SignInButton session={session} />
                 </div>
             </div>
