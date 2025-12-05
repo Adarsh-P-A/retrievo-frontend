@@ -20,9 +20,9 @@ export default async function ItemPageContent({ formattedItem }: { formattedItem
                         />
                         <div className="absolute top-4 left-4">
                             <Badge
-                                className={`text-lg px-4 py-1.5 shadow-md ${formattedItem.type === 'lost'
+                                className={`text-lg px-4 py-1.5 shadow-md text-white ${formattedItem.type === 'lost'
                                     ? 'bg-red-500 hover:bg-red-600 border-red-600'
-                                    : 'bg-green-500 hover:bg-green-600 border-green-600'
+                                    : 'bg-emerald-500 hover:bg-emerald-600 border-emerald-600'
                                     }`}
                             >
                                 {formattedItem.type === 'lost' ? 'Lost' : 'Found'}

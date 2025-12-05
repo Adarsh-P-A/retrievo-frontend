@@ -58,14 +58,14 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-            <Button asChild size="lg" className="h-14 px-8 text-lg gap-2 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 bg-red-600 hover:bg-red-700 dark:bg-red-600 text-white border-0">
+            <Button asChild size="lg" className="h-14 px-8 text-lg gap-2 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 bg-red-500 hover:bg-red-600 dark:bg-red-600 text-white border-0">
               <Link href="/lost/new">
                 <AlertCircle className="w-5 h-5" />
                 I Lost Something
               </Link>
             </Button>
 
-            <Button asChild size="lg" className="h-14 px-8 text-lg gap-2 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 bg-green-600 hover:bg-green-700 text-white border-0">
+            <Button asChild size="lg" className="h-14 px-8 text-lg gap-2 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 bg-emerald-500 hover:bg-emerald-600 text-white border-0">
               <Link href="/found/new">
                 <CheckCircle2 className="w-5 h-5" />
                 I Found Something
