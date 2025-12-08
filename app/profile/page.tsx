@@ -3,6 +3,7 @@ import { ProfileClient } from '@/app/profile/profile-client';
 import { fetchAllUserItems, UnauthorizedError } from '@/lib/api';
 import { Item } from '@/types/item';
 import { redirect } from 'next/navigation';
+import { SessionProvider } from 'next-auth/react';
 
 export default async function ProfilePage() {
     const session = await auth();
@@ -29,10 +30,12 @@ export default async function ProfilePage() {
     }
 
     return (
-        <ProfileClient
-            session={session}
-            lostItems={lostItems}
-            foundItems={foundItems}
-        />
+        <SessionProvider>
+            <ProfileClient
+                session={session}
+                lostItems={lostItems}
+                foundItems={foundItems}
+            />
+        </SessionProvider>
     );
 }

@@ -15,7 +15,7 @@ export function LoginButton({ session }: { session: any }) {
                         className="cursor-pointer"
                         variant="outline"
                         size="sm"
-                        onClick={() => signIn("google", { callbackUrl: "/" })}
+                        onClick={() => signIn("google", { callbackUrl: "/profile" })}
                     >
                         Login
                     </Button>

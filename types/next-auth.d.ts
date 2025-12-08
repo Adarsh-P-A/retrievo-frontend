@@ -6,6 +6,7 @@ declare module "next-auth" {
             email: string;
             name: string;
             image: string;
+            hostel: "boys" | "girls" | null;
         } & DefaultSession["user"];
 
         backendToken?: string;

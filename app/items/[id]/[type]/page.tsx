@@ -17,13 +17,13 @@ export default async function ItemPage({ params }: { params: Promise<{ id: strin
     const { id, type } = await params;
 
     // Fetch item data
-    const res = await fetchItem(id, type);
+    const res = await fetchItem(id, type, session?.backendToken);
 
-    const { item, reporter } = res;
-
-    if (!item) {
+    if (res == null) {
         notFound();
     }
+
+    const { item, reporter } = res;
 
     const formattedDate = new Date(item.date)
         .toLocaleDateString("en-GB")

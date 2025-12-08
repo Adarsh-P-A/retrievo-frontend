@@ -6,10 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ItemCard } from '@/components/item-card';
 import { LogOut } from 'lucide-react';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';  // Add useSession
 import type { Session } from 'next-auth';
 import { Item } from '@/types/item';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { setHostel } from '@/lib/api';
+import { useState } from 'react';
 
 interface ProfileClientProps {
     session: Session;
@@ -17,7 +19,12 @@ interface ProfileClientProps {
     foundItems: Item[];
 }
 
-export function ProfileClient({ session, lostItems, foundItems }: ProfileClientProps) {
+export function ProfileClient({ session: initialSession, lostItems, foundItems }: ProfileClientProps) {
+    const { data: session, update } = useSession();  // Use session hook
+    const [isSettingHostel, setIsSettingHostel] = useState(false);
+
+    const currentSession = session || initialSession;  // Fallback to initial session
+
     const formattedLost = lostItems.map(item => ({
         ...item,
         type: 'lost' as const
@@ -32,6 +39,26 @@ export function ProfileClient({ session, lostItems, foundItems }: ProfileClientP
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
 
+    const handleSetHostel = async (hostelType: string) => {
+        setIsSettingHostel(true);
+
+        try {
+            const res = await setHostel(hostelType, currentSession.backendToken);
+
+            // Refresh the session to get updated gender field
+            if (res.ok) {
+                await update();
+            } else {
+                alert("Failed to set hostel. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error setting hostel:", error);
+            alert("An error occurred. Please try again.");
+        } finally {
+            setIsSettingHostel(false);
+        }
+    };
+
     return (
         <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-4rem)]">
             <div className="flex flex-col md:flex-row gap-8">
@@ -44,23 +71,45 @@ export function ProfileClient({ session, lostItems, foundItems }: ProfileClientP
                                 <div className="mx-auto mb-4 p-1 bg-background rounded-full w-fit">
                                     <Avatar className="w-24 h-24 border-2 border-background">
                                         <AvatarImage
-                                            src={session.user.image}
-                                            alt={session.user.name}
+                                            src={currentSession.user.image}
+                                            alt={currentSession.user.name}
                                         />
                                         <AvatarFallback>
-                                            {session.user.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
+                                            {currentSession.user.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
                                         </AvatarFallback>
                                     </Avatar>
                                 </div>
-                                <CardTitle className="text-xl">{session.user.name}</CardTitle>
-                                <p className="text-sm text-muted-foreground">{session.user.email}</p>
+                                <CardTitle className="text-xl">{currentSession.user.name}</CardTitle>
+                                <p className="text-sm text-muted-foreground">{currentSession.user.email}</p>
                             </CardHeader>
                             <CardContent className="space-y-2 p-4">
-                                {/* <Button variant="outline" className="w-full justify-start h-10">
-                                    <Settings className="mr-2 h-4 w-4" />
-                                    Edit Profile
-                                </Button> */}
                                 <ThemeToggle />
+                                {!currentSession.user.hostel && (
+                                    <div className="border p-3 rounded-md mb-2 space-y-3">
+                                        <p className="text-sm font-medium">Select Hostel</p>
+
+                                        <div className="flex gap-2">
+                                            <Button
+                                                size="sm"
+                                                onClick={() => handleSetHostel("boys")}
+                                                disabled={isSettingHostel}
+                                            >
+                                                Boys
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                onClick={() => handleSetHostel("girls")}
+                                                disabled={isSettingHostel}
+                                            >
+                                                Girls
+                                            </Button>
+                                        </div>
+
+                                        <p className="text-xs text-muted-foreground leading-tight">
+                                            <b>Note:</b> This is for clothing visibility restrictions. It cannot be changed later.
+                                        </p>
+                                    </div>
+                                )}
                                 <Button
                                     variant="ghost"
                                     className="w-full justify-start h-10 cursor-pointer text-destructive hover:text-destructive hover:bg-destructive/10"

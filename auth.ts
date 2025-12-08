@@ -79,6 +79,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                             name: me.name,
                             email: me.email,
                             image: me.image,
+                            hostel: me.hostel || null,
                         };
                     }
                 }
