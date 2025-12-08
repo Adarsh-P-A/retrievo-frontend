@@ -11,7 +11,9 @@ import type { Session } from 'next-auth';
 import { Item } from '@/types/item';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { setHostel } from '@/lib/api';
-import { useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { toast } from 'sonner';
 
 interface ProfileClientProps {
     session: Session;
@@ -20,8 +22,21 @@ interface ProfileClientProps {
 }
 
 export function ProfileClient({ session: initialSession, lostItems, foundItems }: ProfileClientProps) {
-    const { data: session, update } = useSession();  // Use session hook
+    const { data: session, update } = useSession();
     const [isSettingHostel, setIsSettingHostel] = useState(false);
+    const toastShownRef = useRef(false);
+
+    const params = useSearchParams();
+    const reason = params.get("reason");
+
+    useEffect(() => {
+        if (reason === "hostel_required" && !toastShownRef.current) {
+            toast.error("Hostel Required", {
+                description: "Please set your hostel before reporting items.",
+            });
+            toastShownRef.current = true;
+        }
+    }, [reason]);
 
     const currentSession = session || initialSession;  // Fallback to initial session
 
@@ -45,9 +60,12 @@ export function ProfileClient({ session: initialSession, lostItems, foundItems }
         try {
             const res = await setHostel(hostelType, currentSession.backendToken);
 
+            console.log(res);
+
             // Refresh the session to get updated gender field
             if (res.ok) {
                 await update();
+                toast.success("Hostel set successfully!");
             } else {
                 alert("Failed to set hostel. Please try again.");
             }

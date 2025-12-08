@@ -219,8 +219,11 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
                                                 </FormControl>
                                                 <SelectContent>
                                                     <SelectItem value="public">Public</SelectItem>
-                                                    <SelectItem value="boys">Boys Only</SelectItem>
-                                                    <SelectItem value="girls">Girls Only</SelectItem>
+                                                    {session.user.hostel === "boys" ? (
+                                                        <SelectItem value="boys">Boys Only</SelectItem>
+                                                    ) : (
+                                                        <SelectItem value="girls">Girls Only</SelectItem>
+                                                    )}
                                                 </SelectContent>
                                             </Select>
                                             <FormDescription>

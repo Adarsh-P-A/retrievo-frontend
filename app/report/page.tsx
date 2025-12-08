@@ -6,6 +6,10 @@ export default async function ReportPage({ searchParams }: { searchParams: Promi
     const session = await auth();
     const { type } = await searchParams;
 
+    if (session?.user.hostel === null) {
+        redirect(`/profile?reason=hostel_required`);
+    }
+
     if (type !== 'lost' && type !== 'found' && type !== undefined) {
         redirect(`/report`);
     }

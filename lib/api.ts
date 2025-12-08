@@ -20,7 +20,7 @@ export async function postLostFoundItem(
     formData: FormData,
     token?: string
 ) {
-    const endpoint = `${process.env.BACKEND_URL}/items/`
+    const endpoint = `${process.env.NEXT_PUBLIC_BACKEND_URL}/items/`
 
     try {
         const res = await fetch(endpoint, {
@@ -50,7 +50,7 @@ export async function postLostFoundItem(
 // GET: All Items
 export async function fetchAllItems(token?: string) {
     try {
-        const res = await fetch(`${process.env.BACKEND_URL}/items/all`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/items/all`, {
             headers: {
                 ...(token ? { Authorization: `Bearer ${token}` } : {}),
             },
@@ -81,7 +81,7 @@ export async function fetchAllItems(token?: string) {
 export async function fetchItem(itemId: string, itemType: string, token?: string) {
     try {
         const res = await fetch(
-            `${process.env.BACKEND_URL}/items/${itemId}/${itemType}`, {
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/items/${itemId}/${itemType}`, {
             headers: {
                 ...(token ? { Authorization: `Bearer ${token}` } : {}),
             }
@@ -102,7 +102,7 @@ export async function fetchItem(itemId: string, itemType: string, token?: string
 // GET: All Items for a Specific User
 export async function fetchAllUserItems(token?: string) {
     try {
-        const res = await fetch(`${process.env.BACKEND_URL}/profile/my-items`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/profile/my-items`, {
             headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -151,7 +151,7 @@ export async function fetchFoundUserItems(
 
     try {
         const res = await fetch(
-            `${process.env.BACKEND_URL}/profile/found-items?category=${lostItemCategory}`, {
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/profile/found-items?category=${lostItemCategory}`, {
             headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -174,7 +174,7 @@ export async function fetchFoundUserItems(
 // GET: User Profile Information
 export const fetchUserProfile = async (user_id?: string) => {
     try {
-        const res = await fetch(`${process.env.BACKEND_URL}/profile/${user_id}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/profile/${user_id}`);
 
         if (!res.ok) {
             console.error("fetchUserProfile failed:", res.status);
@@ -191,7 +191,7 @@ export const fetchUserProfile = async (user_id?: string) => {
 // POST: Set User Hostel
 export const setHostel = async (hostel: string, token?: string) => {
     try {
-        const res = await fetch(`${process.env.BACKEND_URL}/profile/set-hostel/${hostel}`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/profile/set-hostel/${hostel}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
