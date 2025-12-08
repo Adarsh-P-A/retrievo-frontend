@@ -132,7 +132,7 @@ export async function fetchFoundUserItems(
         "electronics",
         "clothing",
         "bags",
-        "keys_wallets",
+        "keys-wallets",
         "documents",
         "others",
     ];

@@ -41,7 +41,8 @@ const formSchema = z.object({
     category: z.string(),
     date: z.date({ message: "A date is required." }),
     location: z.string().min(2, "Location must be at least 2 characters."),
-
+    visibility: z.enum(["public", "boys", "girls"]),
+    item_type: z.enum(["lost", "found"]),
     image: z
         .instanceof(File, { message: "Image is required." })
         .refine((file) => file.size <= 5 * 1024 * 1024, {
@@ -55,7 +56,7 @@ const formSchema = z.object({
 });
 
 interface ItemFormClientProps {
-    type: 'lost' | 'found';
+    type: string | undefined;
     session: Session;
 }
 
@@ -69,18 +70,17 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
             title: "",
             description: "",
             location: "",
+            visibility: "public",
+            item_type: "lost",
         },
     });
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        if (!type) return;
-
         try {
             setIsSubmitting(true);
 
             const formData = new FormData();
 
-            formData.append("item_type", type);
             Object.entries(values).forEach(([key, val]) => {
                 if (val instanceof Date) {
                     formData.append(key, val.toISOString());
@@ -97,11 +97,11 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
             }
 
             alert("Item reported successfully!");
-            redirect(`/items/${res.data}/${type}`);
+            redirect(`/items/${res.data}/${values.item_type}`);
 
         } catch (error) {
             if (error instanceof UnauthorizedError) {
-                redirect(`/auth/signin?callbackUrl=/${type}/new`);
+                redirect(`/auth/signin?callbackUrl=/${values.item_type}/new`);
             }
             throw error;
         } finally {
@@ -125,7 +125,7 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
         <div className="max-w-3xl mx-auto py-10 px-4">
             <div className="mb-8 text-center">
                 <h1 className="text-3xl font-bold tracking-tight mb-2">
-                    Report {type === 'lost' ? 'Lost' : 'Found'} Item
+                    Report {form.getValues("item_type") === 'lost' ? 'Lost' : 'Found'} Item
                 </h1>
                 <p className="text-muted-foreground max-w-lg mx-auto">
                     Please provide as much detail as possible to help us connect the item with its owner.
@@ -169,7 +169,7 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
                                                     <SelectItem value="electronics">Electronics</SelectItem>
                                                     <SelectItem value="clothing">Clothing</SelectItem>
                                                     <SelectItem value="bags">Bags</SelectItem>
-                                                    <SelectItem value="keys & wallets">Keys & Wallets</SelectItem>
+                                                    <SelectItem value="keys-wallets">Keys & Wallets</SelectItem>
                                                     <SelectItem value="documents">Documents</SelectItem>
                                                     <SelectItem value="others">Others</SelectItem>
                                                 </SelectContent>
@@ -180,10 +180,62 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
                                 />
                                 <FormField
                                     control={form.control}
+                                    name="item_type"
+                                    render={() => (
+                                        <FormItem className="col-span-1">
+                                            <FormLabel>Type</FormLabel>
+                                            <Select
+                                                onValueChange={(val) => form.setValue("item_type", val as any)}
+                                                defaultValue={type ?? ''}
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger className="h-11 w-full">
+                                                        <SelectValue placeholder="Select type" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="lost">Lost</SelectItem>
+                                                    <SelectItem value="found">Found</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormDescription>
+                                                Whether you lost or found this item.
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="visibility"
+                                    render={({ field }) => (
+                                        <FormItem className="col-span-1">
+                                            <FormLabel>Visibility</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger className="h-11 w-full">
+                                                        <SelectValue placeholder="Select visibility" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="public">Public</SelectItem>
+                                                    <SelectItem value="boys">Boys Only</SelectItem>
+                                                    <SelectItem value="girls">Girls Only</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormDescription>
+                                                Who should see this item on the feed.
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
                                     name="date"
                                     render={({ field }) => (
                                         <FormItem className="col-span-1 flex flex-col">
-                                            <FormLabel>Date {type === "lost" ? "Lost" : "Found"}</FormLabel>
+                                            <FormLabel>Date</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <FormControl>
@@ -224,13 +276,12 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
                                     <FormItem>
                                         <FormLabel>Location</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="e.g. Central Park, near the fountain" {...field} className="h-11" />
+                                            <Input placeholder="e.g. Center Circle" {...field} className="h-11" />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
-
                             <FormField
                                 control={form.control}
                                 name="description"
@@ -327,6 +378,6 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
                     </Form>
                 </CardContent>
             </Card>
-        </div>
+        </div >
     );
 }

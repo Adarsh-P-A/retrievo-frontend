@@ -14,7 +14,7 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
     let userFoundItems;
 
     try {
-        userFoundItems = await fetchFoundUserItems('others', session.backendToken);
+        userFoundItems = await fetchFoundUserItems(category, session.backendToken);
     } catch (err) {
         if (err instanceof UnauthorizedError) {
             redirect(`/auth/signin?callbackUrl=/items/match/${category}`);
