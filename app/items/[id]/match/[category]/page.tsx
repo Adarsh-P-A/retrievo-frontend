@@ -11,10 +11,11 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
         redirect(`/auth/signin?callbackUrl=/items/match/${category}`);
     }
 
-    let userFoundItems;
+    let userFoundItems: Item[] = [];
 
     try {
-        userFoundItems = await fetchFoundUserItems(category, session.backendToken);
+        const res = await fetchFoundUserItems(category, session.backendToken);
+        userFoundItems = res.items ?? [];
     } catch (err) {
         if (err instanceof UnauthorizedError) {
             redirect(`/auth/signin?callbackUrl=/items/match/${category}`);

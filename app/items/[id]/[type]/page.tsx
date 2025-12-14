@@ -79,6 +79,10 @@ export default async function ItemPage({ params }: { params: Promise<{ id: strin
                                 <Badge variant="outline" className="font-normal">
                                     {item.category}
                                 </Badge>
+                                <Badge variant="outline" className="font-normal">
+                                    {item.visibility}
+                                    {['boys', 'girls'].includes(item.visibility) ? ' only' : ''}
+                                </Badge>
                             </div>
 
                             <div className="space-y-4 mb-6">

@@ -112,7 +112,7 @@ export async function fetchAllUserItems(token?: string) {
             console.error("fetchAllUserItems failed:", res.status);
             return {
                 ok: false,
-                data: { found_items: [], lost_items: [] },
+                data: { lost_items: [], found_items: [] },
                 status: res.status,
             };
         }
@@ -124,7 +124,7 @@ export async function fetchAllUserItems(token?: string) {
         console.error("fetchAllUserItems error:", err);
         return {
             ok: false,
-            data: { found_items: [], lost_items: [] },
+            data: { lost_items: [], found_items: [] },
             error: String(err),
         };
     }
@@ -146,7 +146,7 @@ export async function fetchFoundUserItems(
 
     if (!VALID_CATEGORIES.includes(lostItemCategory)) {
         console.error("Invalid category:", lostItemCategory);
-        return [];
+        return { items: [] };
     }
 
     try {
@@ -159,7 +159,7 @@ export async function fetchFoundUserItems(
 
         if (!res.ok) {
             console.error("fetchFoundUserItems failed:", res.status);
-            return [];
+            return { items: [] };
         }
 
         return await safeJson(res);
@@ -167,7 +167,7 @@ export async function fetchFoundUserItems(
         if (err instanceof UnauthorizedError) throw err;
 
         console.error("fetchFoundUserItems error:", err);
-        return [];
+        return { items: [] };
     }
 }
 

@@ -10,8 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Item } from '@/types/item';
 
 interface ItemsBrowseProps {
-    initialLostItems: Item[];
-    initialFoundItems: Item[];
+    lostItems: Item[];
+    foundItems: Item[];
 }
 
 // Helper function to format item data
@@ -26,7 +26,7 @@ function formatItem(item: Item) {
     };
 }
 
-export function ItemsClient({ initialLostItems, initialFoundItems }: ItemsBrowseProps) {
+export function ItemsClient({ lostItems, foundItems }: ItemsBrowseProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('all');
 
@@ -44,8 +44,8 @@ export function ItemsClient({ initialLostItems, initialFoundItems }: ItemsBrowse
         });
     };
 
-    const filteredLostItems = filterItems(initialLostItems).map(formatItem);
-    const filteredFoundItems = filterItems(initialFoundItems).map(formatItem);
+    const filteredLostItems = filterItems(lostItems).map(formatItem);
+    const filteredFoundItems = filterItems(foundItems).map(formatItem);
 
     return (
         <>
@@ -81,34 +81,11 @@ export function ItemsClient({ initialLostItems, initialFoundItems }: ItemsBrowse
                 </div>
             </div>
 
-            <Tabs defaultValue="lost" className="w-full">
+            <Tabs defaultValue="found" className="w-full">
                 <TabsList className="grid w-full max-w-md grid-cols-2 mb-8 bg-muted/50 p-1 mx-auto">
-                    <TabsTrigger value="lost" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">Lost Items</TabsTrigger>
                     <TabsTrigger value="found" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">Found Items</TabsTrigger>
+                    <TabsTrigger value="lost" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">Lost Items</TabsTrigger>
                 </TabsList>
-
-                <TabsContent value="lost" className="space-y-4 animate-in fade-in-50 duration-500">
-                    {filteredLostItems.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                            {filteredLostItems.map(item => (
-                                <ItemCard key={item.id} item={item} type="lost" />
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="flex flex-col items-center justify-center py-16 text-center border rounded-lg bg-muted/10 border-dashed">
-                            <div className="bg-muted/30 p-4 rounded-full mb-4">
-                                <Search className="w-8 h-8 text-muted-foreground" />
-                            </div>
-                            <h3 className="text-lg font-semibold">No lost items found</h3>
-                            <p className="text-muted-foreground max-w-sm mt-2">
-                                We couldn't find any lost items matching your search criteria. Try adjusting your filters.
-                            </p>
-                            <Button variant="link" onClick={() => { setSearchQuery(''); setCategoryFilter('all') }} className="mt-4">
-                                Clear all filters
-                            </Button>
-                        </div>
-                    )}
-                </TabsContent>
 
                 <TabsContent value="found" className="space-y-4 animate-in fade-in-50 duration-500">
                     {filteredFoundItems.length > 0 ? (
@@ -125,6 +102,29 @@ export function ItemsClient({ initialLostItems, initialFoundItems }: ItemsBrowse
                             <h3 className="text-lg font-semibold">No found items found</h3>
                             <p className="text-muted-foreground max-w-sm mt-2">
                                 We couldn't find any found items matching your search criteria. Try adjusting your filters.
+                            </p>
+                            <Button variant="link" onClick={() => { setSearchQuery(''); setCategoryFilter('all') }} className="mt-4">
+                                Clear all filters
+                            </Button>
+                        </div>
+                    )}
+                </TabsContent>
+
+                <TabsContent value="lost" className="space-y-4 animate-in fade-in-50 duration-500">
+                    {filteredLostItems.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                            {filteredLostItems.map(item => (
+                                <ItemCard key={item.id} item={item} type="lost" />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-16 text-center border rounded-lg bg-muted/10 border-dashed">
+                            <div className="bg-muted/30 p-4 rounded-full mb-4">
+                                <Search className="w-8 h-8 text-muted-foreground" />
+                            </div>
+                            <h3 className="text-lg font-semibold">No lost items found</h3>
+                            <p className="text-muted-foreground max-w-sm mt-2">
+                                We couldn't find any lost items matching your search criteria. Try adjusting your filters.
                             </p>
                             <Button variant="link" onClick={() => { setSearchQuery(''); setCategoryFilter('all') }} className="mt-4">
                                 Clear all filters

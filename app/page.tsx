@@ -57,7 +57,7 @@ export default function Home() {
             Simple, fast, and community-driven recovery.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+          {/* <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
             <Button asChild size="lg" className="h-14 px-8 text-lg gap-2 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 bg-red-500 hover:bg-red-600 dark:bg-red-600 text-white border-0">
               <Link href="/report?type=lost">
                 <AlertCircle className="w-5 h-5" />
@@ -71,7 +71,7 @@ export default function Home() {
                 I Found Something
               </Link>
             </Button>
-          </div>
+          </div> */}
 
           <div className="pt-4">
             <Button asChild variant="link" className="text-muted-foreground hover:text-primary gap-1">

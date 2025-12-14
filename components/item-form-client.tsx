@@ -33,12 +33,13 @@ import { redirect } from 'next/navigation';
 import { postLostFoundItem, UnauthorizedError } from '@/lib/api';
 import { signIn } from "next-auth/react";
 import type { Session } from 'next-auth';
+import { ImageViewer } from './image-viewer';
 
 
 const formSchema = z.object({
     title: z.string().min(2, "Title must be at least 2 characters."),
     description: z.string().min(10, "Description must be at least 10 characters."),
-    category: z.string(),
+    category: z.string().min(1, "Category is required"),
     date: z.date({ message: "A date is required." }),
     location: z.string().min(2, "Location must be at least 2 characters."),
     visibility: z.enum(["public", "boys", "girls"]),
@@ -56,11 +57,10 @@ const formSchema = z.object({
 });
 
 interface ItemFormClientProps {
-    type: string | undefined;
     session: Session;
 }
 
-export function ItemFormClient({ type, session }: ItemFormClientProps) {
+export function ItemFormClient({ session }: ItemFormClientProps) {
     const [preview, setPreview] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -71,6 +71,7 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
             description: "",
             location: "",
             visibility: "public",
+            category: "",
             item_type: "lost",
         },
     });
@@ -121,6 +122,7 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
             </div>
         );
     }
+
     return (
         <div className="max-w-3xl mx-auto py-10 px-4">
             <div className="mb-8 text-center">
@@ -181,13 +183,10 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
                                 <FormField
                                     control={form.control}
                                     name="item_type"
-                                    render={() => (
+                                    render={({ field }) => (
                                         <FormItem className="col-span-1">
                                             <FormLabel>Type</FormLabel>
-                                            <Select
-                                                onValueChange={(val) => form.setValue("item_type", val as any)}
-                                                defaultValue={type ?? ''}
-                                            >
+                                            <Select onValueChange={field.onChange} value={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger className="h-11 w-full">
                                                         <SelectValue placeholder="Select type" />
@@ -344,23 +343,25 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
                                                 </>
                                             ) : (
                                                 <div className="relative w-full max-w-md aspect-video rounded-lg overflow-hidden border">
-                                                    <img
-                                                        src={preview}
-                                                        alt="Preview"
-                                                        className="h-full w-full object-cover"
-                                                    />
-                                                    <Button
-                                                        type="button"
-                                                        variant="destructive"
-                                                        size="icon"
-                                                        className="absolute top-2 right-2 h-8 w-8 rounded-full cursor-pointer"
-                                                        onClick={() => {
-                                                            setPreview(null);
-                                                            field.onChange(null);
-                                                        }}
-                                                    >
-                                                        <X className="h-4 w-4" />
-                                                    </Button>
+                                                    <ImageViewer src={preview} alt="Preview">
+                                                        <img
+                                                            src={preview}
+                                                            alt="Preview"
+                                                            className="h-full w-full object-cover"
+                                                        />
+                                                        <Button
+                                                            type="button"
+                                                            variant="destructive"
+                                                            size="icon"
+                                                            className="absolute top-2 right-2 h-8 w-8 rounded-full cursor-pointer"
+                                                            onClick={() => {
+                                                                setPreview(null);
+                                                                field.onChange(null);
+                                                            }}
+                                                        >
+                                                            <X className="h-4 w-4" />
+                                                        </Button>
+                                                    </ImageViewer>
                                                 </div>
                                             )}
                                         </div>
@@ -375,7 +376,7 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
                                 className="w-full h-12 text-lg cursor-pointer"
                                 disabled={isSubmitting}
                             >
-                                {isSubmitting ? "Submitting..." : "Submit Report"}
+                                {isSubmitting ? "Reporting..." : "Report Item"}
                             </Button>
                         </form>
                     </Form>

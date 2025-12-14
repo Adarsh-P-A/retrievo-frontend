@@ -16,11 +16,11 @@ export default async function ProfilePage() {
     let lostItems: Item[] = [];
 
     try {
-        // Returns all items for a user with lost_items and found_items arrays
+        // Returns all items for a user in a single array
         const res = await fetchAllUserItems(session.backendToken);
 
-        foundItems = res.data.found_items;
         lostItems = res.data.lost_items;
+        foundItems = res.data.found_items;
     } catch (err) {
         if (err instanceof UnauthorizedError) {
             redirect('/auth/signin?callbackUrl=/profile');
