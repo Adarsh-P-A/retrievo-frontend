@@ -29,7 +29,7 @@ export default function ClientMatchPage({ userFoundItems, itemId }: ClientMatchP
             alert("Notification sent to the owner! They will review your match.");
 
             // Navigate back to item page
-            router.replace(`/items/${itemId}`);
+            router.replace(`/items/`);
         } catch (error) {
             console.error('Failed to notify:', error);
             alert('Failed to send notification. Please try again.');
@@ -73,12 +73,12 @@ export default function ClientMatchPage({ userFoundItems, itemId }: ClientMatchP
                     {userFoundItems.length > 0 ? (
                         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                             {userFoundItems.map((item) => {
-                                const isSelected = selectedItemId === item.reporter_public_id;
+                                const isSelected = selectedItemId === item.id;
 
                                 return (
                                     <div
-                                        key={item.reporter_public_id}
-                                        onClick={() => setSelectedItemId(item.reporter_public_id)}
+                                        key={item.id}
+                                        onClick={() => setSelectedItemId(item.id)}
                                         className={`
                                             group relative cursor-pointer rounded-xl border bg-card transition-all duration-200 overflow-hidden
                                             ${isSelected
@@ -96,18 +96,15 @@ export default function ClientMatchPage({ userFoundItems, itemId }: ClientMatchP
                                                 />
                                             </div>
 
-                                            <div className="flex-1 min-w-0 py-1">
+                                            <div className="flex-1 min-w-0 py-1 space-y-1.5">
                                                 <h3
                                                     className={`font-medium truncate pr-6 ${isSelected ? "text-primary" : "text-foreground"
                                                         }`}
                                                 >
                                                     {item.title}
                                                 </h3>
-                                                <p className="text-xs text-muted-foreground mt-1 truncate">
-                                                    {item.category}
-                                                </p>
                                                 <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                                                    {item.location}
+                                                    Found at {item.location}
                                                 </p>
                                             </div>
 

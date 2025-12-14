@@ -22,13 +22,10 @@ export async function Navbar() {
                         Browse Items
                     </Link>
                     <div className="flex items-center gap-4">
-                        <Button asChild variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
-                            <Link href="/lost/new">Report Lost</Link>
-                        </Button>
                         <Button asChild size="sm" className="gap-2">
-                            <Link href="/found/new">
+                            <Link href="/report">
                                 <PlusCircle className="w-4 h-4" />
-                                Report Found
+                                Report Item
                             </Link>
                         </Button>
                     </div>

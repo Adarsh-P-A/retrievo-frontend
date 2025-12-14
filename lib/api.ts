@@ -20,7 +20,7 @@ export async function postLostFoundItem(
     formData: FormData,
     token?: string
 ) {
-    const endpoint = "http://127.0.0.1:8000/items/"
+    const endpoint = `${process.env.NEXT_PUBLIC_BACKEND_URL}/items/`
 
     try {
         const res = await fetch(endpoint, {
@@ -48,9 +48,13 @@ export async function postLostFoundItem(
 }
 
 // GET: All Items
-export async function fetchAllItems() {
+export async function fetchAllItems(token?: string) {
     try {
-        const res = await fetch("http://127.0.0.1:8000/items/all");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/items/all`, {
+            headers: {
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+        });
 
         if (!res.ok) {
             console.error("fetchAllItems failed:", res.status);
@@ -74,11 +78,14 @@ export async function fetchAllItems() {
 }
 
 // GET: Single Item by ID and Type along with Reporter Info
-export async function fetchItem(itemId: string, itemType: string) {
+export async function fetchItem(itemId: string, itemType: string, token?: string) {
     try {
         const res = await fetch(
-            `http://127.0.0.1:8000/items/${itemId}/${itemType}`
-        );
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/items/${itemId}/${itemType}`, {
+            headers: {
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            }
+        });
 
         if (!res.ok) {
             console.error("fetchItem failed:", res.status);
@@ -95,7 +102,7 @@ export async function fetchItem(itemId: string, itemType: string) {
 // GET: All Items for a Specific User
 export async function fetchAllUserItems(token?: string) {
     try {
-        const res = await fetch("http://127.0.0.1:8000/profile/my-items", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/profile/my-items`, {
             headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -105,7 +112,7 @@ export async function fetchAllUserItems(token?: string) {
             console.error("fetchAllUserItems failed:", res.status);
             return {
                 ok: false,
-                data: { found_items: [], lost_items: [] },
+                data: { lost_items: [], found_items: [] },
                 status: res.status,
             };
         }
@@ -117,7 +124,7 @@ export async function fetchAllUserItems(token?: string) {
         console.error("fetchAllUserItems error:", err);
         return {
             ok: false,
-            data: { found_items: [], lost_items: [] },
+            data: { lost_items: [], found_items: [] },
             error: String(err),
         };
     }
@@ -132,29 +139,27 @@ export async function fetchFoundUserItems(
         "electronics",
         "clothing",
         "bags",
-        "keys_wallets",
+        "keys-wallets",
         "documents",
         "others",
     ];
 
     if (!VALID_CATEGORIES.includes(lostItemCategory)) {
         console.error("Invalid category:", lostItemCategory);
-        return [];
+        return { items: [] };
     }
 
     try {
         const res = await fetch(
-            `http://127.0.0.1:8000/profile/found-items?category=${lostItemCategory}`,
-            {
-                headers: { Authorization: `Bearer ${token}` },
-            }
-        );
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/profile/found-items?category=${lostItemCategory}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
 
         if (res.status === 401) throw new UnauthorizedError();
 
         if (!res.ok) {
             console.error("fetchFoundUserItems failed:", res.status);
-            return [];
+            return { items: [] };
         }
 
         return await safeJson(res);
@@ -162,14 +167,14 @@ export async function fetchFoundUserItems(
         if (err instanceof UnauthorizedError) throw err;
 
         console.error("fetchFoundUserItems error:", err);
-        return [];
+        return { items: [] };
     }
 }
 
 // GET: User Profile Information
 export const fetchUserProfile = async (user_id?: string) => {
     try {
-        const res = await fetch(`http://127.0.0.1:8000/profile/${user_id}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/profile/${user_id}`);
 
         if (!res.ok) {
             console.error("fetchUserProfile failed:", res.status);
@@ -180,5 +185,28 @@ export const fetchUserProfile = async (user_id?: string) => {
     } catch (err) {
         console.error("fetchUserProfile error:", err);
         return null;
+    }
+}
+
+// POST: Set User Hostel
+export const setHostel = async (hostel: string, token?: string) => {
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/profile/set-hostel/${hostel}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!res.ok) {
+            console.error("setHostel failed:", res.status);
+            return { ok: false, status: res.status };
+        }
+
+        return { ok: true };
+    } catch (err) {
+        console.error("setHostel error:", err);
+        return { ok: false, error: String(err) };
     }
 }

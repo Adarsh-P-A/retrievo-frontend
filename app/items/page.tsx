@@ -1,14 +1,17 @@
 import { fetchAllItems } from '@/lib/api';
 import { ItemsClient } from './items-client';
 import { Item } from '@/types/item';
+import { auth } from '@/auth';
 
 
 export default async function BrowseItemsPage() {
-    // Returns all items in a dictionary with lost_items and found_items arrays
-    const res = await fetchAllItems();
+    const session = await auth();
 
-    const lostItems: Item[] = res.data.lost_items ?? [];
-    const foundItems: Item[] = res.data.found_items ?? [];
+    // Returns all items in a single array
+    const res = await fetchAllItems(session?.backendToken);
+
+    const lostItems: Item[] = res.data.lost_items;
+    const foundItems: Item[] = res.data.found_items;
 
     return (
         <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-4rem)]">
@@ -23,7 +26,7 @@ export default async function BrowseItemsPage() {
                 </div>
             </div>
 
-            <ItemsClient initialLostItems={lostItems} initialFoundItems={foundItems} />
+            <ItemsClient lostItems={lostItems} foundItems={foundItems} />
         </div>
     );
 }

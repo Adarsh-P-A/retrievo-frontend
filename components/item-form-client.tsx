@@ -29,19 +29,21 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation'; // Add this import
 import { postLostFoundItem, UnauthorizedError } from '@/lib/api';
 import { signIn } from "next-auth/react";
 import type { Session } from 'next-auth';
+import { ImageViewer } from './image-viewer';
 
 
 const formSchema = z.object({
     title: z.string().min(2, "Title must be at least 2 characters."),
     description: z.string().min(10, "Description must be at least 10 characters."),
-    category: z.string(),
+    category: z.string().min(1, "Category is required"),
     date: z.date({ message: "A date is required." }),
     location: z.string().min(2, "Location must be at least 2 characters."),
-
+    visibility: z.enum(["public", "boys", "girls"]),
+    item_type: z.enum(["lost", "found"]),
     image: z
         .instanceof(File, { message: "Image is required." })
         .refine((file) => file.size <= 5 * 1024 * 1024, {
@@ -55,13 +57,13 @@ const formSchema = z.object({
 });
 
 interface ItemFormClientProps {
-    type: 'lost' | 'found';
     session: Session;
 }
 
-export function ItemFormClient({ type, session }: ItemFormClientProps) {
+export function ItemFormClient({ session }: ItemFormClientProps) {
     const [preview, setPreview] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const router = useRouter();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -69,18 +71,18 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
             title: "",
             description: "",
             location: "",
+            visibility: "public",
+            category: "",
+            item_type: "lost",
         },
     });
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        if (!type) return;
-
         try {
             setIsSubmitting(true);
 
             const formData = new FormData();
 
-            formData.append("item_type", type);
             Object.entries(values).forEach(([key, val]) => {
                 if (val instanceof Date) {
                     formData.append(key, val.toISOString());
@@ -97,11 +99,10 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
             }
 
             alert("Item reported successfully!");
-            redirect(`/items/${res.data}/${type}`);
-
+            router.push(`/items/${res.data}/${values.item_type}`);
         } catch (error) {
             if (error instanceof UnauthorizedError) {
-                redirect(`/auth/signin?callbackUrl=/${type}/new`);
+                router.push(`/auth/signin?callbackUrl=/${values.item_type}/new`);
             }
             throw error;
         } finally {
@@ -121,11 +122,12 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
             </div>
         );
     }
+
     return (
         <div className="max-w-3xl mx-auto py-10 px-4">
             <div className="mb-8 text-center">
                 <h1 className="text-3xl font-bold tracking-tight mb-2">
-                    Report {type === 'lost' ? 'Lost' : 'Found'} Item
+                    Report {form.getValues("item_type") === 'lost' ? 'Lost' : 'Found'} Item
                 </h1>
                 <p className="text-muted-foreground max-w-lg mx-auto">
                     Please provide as much detail as possible to help us connect the item with its owner.
@@ -159,7 +161,7 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
                                     render={({ field }) => (
                                         <FormItem className="col-span-1">
                                             <FormLabel>Category</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <Select onValueChange={field.onChange} value={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger className="h-11 w-full">
                                                         <SelectValue placeholder="Select a category" />
@@ -169,7 +171,7 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
                                                     <SelectItem value="electronics">Electronics</SelectItem>
                                                     <SelectItem value="clothing">Clothing</SelectItem>
                                                     <SelectItem value="bags">Bags</SelectItem>
-                                                    <SelectItem value="keys & wallets">Keys & Wallets</SelectItem>
+                                                    <SelectItem value="keys-wallets">Keys & Wallets</SelectItem>
                                                     <SelectItem value="documents">Documents</SelectItem>
                                                     <SelectItem value="others">Others</SelectItem>
                                                 </SelectContent>
@@ -180,10 +182,62 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
                                 />
                                 <FormField
                                     control={form.control}
+                                    name="item_type"
+                                    render={({ field }) => (
+                                        <FormItem className="col-span-1">
+                                            <FormLabel>Type</FormLabel>
+                                            <Select onValueChange={field.onChange} value={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger className="h-11 w-full">
+                                                        <SelectValue placeholder="Select type" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="lost">Lost</SelectItem>
+                                                    <SelectItem value="found">Found</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormDescription>
+                                                Whether you lost or found this item.
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="visibility"
+                                    render={({ field }) => (
+                                        <FormItem className="col-span-1">
+                                            <FormLabel>Visibility</FormLabel>
+                                            <Select onValueChange={field.onChange} value={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger className="h-11 w-full">
+                                                        <SelectValue placeholder="Select visibility" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="public">Public</SelectItem>
+                                                    {session.user.hostel === "boys" ? (
+                                                        <SelectItem value="boys">Boys Only</SelectItem>
+                                                    ) : (
+                                                        <SelectItem value="girls">Girls Only</SelectItem>
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormDescription>
+                                                Who should see this item on the feed.
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
                                     name="date"
                                     render={({ field }) => (
                                         <FormItem className="col-span-1 flex flex-col">
-                                            <FormLabel>Date {type === "lost" ? "Lost" : "Found"}</FormLabel>
+                                            <FormLabel>Date</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <FormControl>
@@ -224,13 +278,12 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
                                     <FormItem>
                                         <FormLabel>Location</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="e.g. Central Park, near the fountain" {...field} className="h-11" />
+                                            <Input placeholder="e.g. Center Circle" {...field} className="h-11" />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
-
                             <FormField
                                 control={form.control}
                                 name="description"
@@ -290,23 +343,25 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
                                                 </>
                                             ) : (
                                                 <div className="relative w-full max-w-md aspect-video rounded-lg overflow-hidden border">
-                                                    <img
-                                                        src={preview}
-                                                        alt="Preview"
-                                                        className="h-full w-full object-cover"
-                                                    />
-                                                    <Button
-                                                        type="button"
-                                                        variant="destructive"
-                                                        size="icon"
-                                                        className="absolute top-2 right-2 h-8 w-8 rounded-full cursor-pointer"
-                                                        onClick={() => {
-                                                            setPreview(null);
-                                                            field.onChange(null);
-                                                        }}
-                                                    >
-                                                        <X className="h-4 w-4" />
-                                                    </Button>
+                                                    <ImageViewer src={preview} alt="Preview">
+                                                        <img
+                                                            src={preview}
+                                                            alt="Preview"
+                                                            className="h-full w-full object-cover"
+                                                        />
+                                                        <Button
+                                                            type="button"
+                                                            variant="destructive"
+                                                            size="icon"
+                                                            className="absolute top-2 right-2 h-8 w-8 rounded-full cursor-pointer"
+                                                            onClick={() => {
+                                                                setPreview(null);
+                                                                field.onChange(null);
+                                                            }}
+                                                        >
+                                                            <X className="h-4 w-4" />
+                                                        </Button>
+                                                    </ImageViewer>
                                                 </div>
                                             )}
                                         </div>
@@ -321,12 +376,12 @@ export function ItemFormClient({ type, session }: ItemFormClientProps) {
                                 className="w-full h-12 text-lg cursor-pointer"
                                 disabled={isSubmitting}
                             >
-                                {isSubmitting ? "Submitting..." : "Submit Report"}
+                                {isSubmitting ? "Reporting..." : "Report"}
                             </Button>
                         </form>
                     </Form>
                 </CardContent>
             </Card>
-        </div>
+        </div >
     );
 }

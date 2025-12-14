@@ -14,12 +14,13 @@ export default async function UserPage({ params }: { params: Promise<{ user_id: 
     let lostItems: Item[] = [];
 
     try {
-        // Returns all details for a user with lost_items and found_items arrays
+        // Returns all details for a user with items in a single array
         const res = await fetchUserProfile(user_id);
 
         user = res.user;
-        foundItems = res.found_items;
-        lostItems = res.lost_items;
+        const allItems: Item[] = res.items ?? [];
+        foundItems = allItems.filter(item => item.type === 'found');
+        lostItems = allItems.filter(item => item.type === 'lost');
     } catch (err) {
         console.error("Error fetching user profile items:", err);
         throw err;

@@ -4,4 +4,5 @@ export interface User {
     image: string;
     public_id: string;
     created_at: string;
+    hostel?: string;
 }

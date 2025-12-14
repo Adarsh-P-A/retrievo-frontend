@@ -11,23 +11,23 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { auth } from "@/auth";
 import { ImageViewer } from "@/components/image-viewer";
 
-export default async function ItemPage({
-    params,
-}: {
-    params: Promise<{ id: string; type: string }>;
-}) {
+export default async function ItemPage({ params }: { params: Promise<{ id: string; type: string }>; }) {
     const session = await auth();
 
     const { id, type } = await params;
 
     // Fetch item data
-    const res = await fetchItem(id, type);
+    const res = await fetchItem(id, type, session?.backendToken);
+
+    if (res == null) {
+        notFound();
+    }
 
     const { item, reporter } = res;
 
-    if (!item) {
-        notFound();
-    }
+    const formattedDate = new Date(item.date)
+        .toLocaleDateString("en-GB")
+        .replace(/\//g, "-");
 
     return (
         <Suspense fallback={<Loading />}>
@@ -74,14 +74,18 @@ export default async function ItemPage({
                                 {item.title}
                             </h1>
                             <div className="flex items-center gap-2 text-muted-foreground mb-6">
-                                <span className="text-sm">Posted on {item.date}</span>
+                                <span className="text-sm">Posted on {formattedDate}</span>
                                 <span>•</span>
                                 <Badge variant="outline" className="font-normal">
                                     {item.category}
                                 </Badge>
+                                <Badge variant="outline" className="font-normal">
+                                    {item.visibility}
+                                    {['boys', 'girls'].includes(item.visibility) ? ' only' : ''}
+                                </Badge>
                             </div>
 
-                            <div className="space-y-4 mb-8">
+                            <div className="space-y-4 mb-6">
                                 <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/30 border">
                                     <MapPin className="w-5 h-5 text-primary mt-0.5 shrink-0" />
                                     <div>
@@ -142,23 +146,20 @@ export default async function ItemPage({
                                         className="w-full h-12 text-lg shadow-sm"
                                         asChild
                                     >
-                                        <Link href={`/items/${item.id}/match/${item.category}`}>
+                                        {/* <Link href={`/items/${item.id}/match/${item.category}`}>
                                             I Found This!
-                                        </Link>
+                                        </Link> */}
                                     </Button>
                                 ) : (
-                                    <Button size="lg" className="w-full h-12 text-lg shadow-sm">
+                                    <Button size="lg" className="w-full h-12 text-lg shadow-sm mb-6">
                                         This is Mine!
                                     </Button>
                                 )}
-                                <Button size="lg" variant="outline" className="w-full h-12">
-                                    Contact {item.type === "lost" ? "Owner" : "Finder"}
-                                </Button>
-                                <div className="grid grid-cols-2 gap-3 pt-2">
+                                <div className="grid grid-cols-2 gap-3">
                                     <Button
                                         variant="ghost"
                                         size="sm"
-                                        className="w-full text-muted-foreground"
+                                        className="w-full text-muted-foreground py-3"
                                     >
                                         <Share2 className="w-4 h-4 mr-2" />
                                         Share
@@ -166,7 +167,7 @@ export default async function ItemPage({
                                     <Button
                                         variant="ghost"
                                         size="sm"
-                                        className="w-full text-muted-foreground hover:text-destructive"
+                                        className="w-full text-muted-foreground hover:text-destructive py-3"
                                     >
                                         <Flag className="w-4 h-4 mr-2" />
                                         Report
