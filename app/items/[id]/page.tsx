@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Loading from "../../loading";
+import Loading from "../loading";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { fetchItem } from "@/lib/api";
@@ -11,13 +11,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { auth } from "@/auth";
 import { ImageViewer } from "@/components/image-viewer";
 
-export default async function ItemPage({ params }: { params: Promise<{ id: string; type: string }>; }) {
+export default async function ItemPage({ params }: { params: Promise<{ id: string; }>; }) {
     const session = await auth();
 
-    const { id, type } = await params;
+    const { id } = await params;
 
     // Fetch item data
-    const res = await fetchItem(id, type, session?.backendToken);
+    const res = await fetchItem(id, session?.backendToken);
 
     if (res == null) {
         notFound();

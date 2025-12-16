@@ -78,10 +78,10 @@ export async function fetchAllItems(token?: string) {
 }
 
 // GET: Single Item by ID and Type along with Reporter Info
-export async function fetchItem(itemId: string, itemType: string, token?: string) {
+export async function fetchItem(itemId: string, token?: string) {
     try {
         const res = await fetch(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/items/${itemId}/${itemType}`, {
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/items/${itemId}`, {
             headers: {
                 ...(token ? { Authorization: `Bearer ${token}` } : {}),
             }
