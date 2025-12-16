@@ -1,5 +1,5 @@
-FROM node:20-alpine
-
+# Build stage
+FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Install deps first
@@ -12,6 +12,18 @@ COPY . .
 # Build with envs injected by Docker
 RUN npm run build
 
+# Runtime stage
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+# Copy contents of the standalone build into the runtime image
+COPY --from=builder /app/.next/standalone ./
+
+# Copy static assets (served by Next)
+# Remove them during actual deployment if using a CDN
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/static ./.next/static
+
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["node", "server.js"]
