@@ -9,9 +9,10 @@ export default async function BrowseItemsPage() {
 
     // Returns all items in a single array
     const res = await fetchAllItems(session?.backendToken);
+    const items = res.data.items;
 
-    const lostItems: Item[] = res.data.lost_items;
-    const foundItems: Item[] = res.data.found_items;
+    const lostItems = items.filter((i: Item) => i.type === "lost")
+    const foundItems = items.filter((i: Item) => i.type === "found")
 
     return (
         <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-4rem)]">

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -82,6 +82,7 @@ export default function ItemEditable({ item, reporter, session }: ItemEditablePr
             if (newValue !== oldValue) {
                 updates[key] =
                     key === "date" ? new Date(newValue).toISOString() : newValue;
+                hasChanges = true;
             }
         }
 
@@ -255,7 +256,7 @@ export default function ItemEditable({ item, reporter, session }: ItemEditablePr
                             isEditing && "bg-muted/30"
                         )}>
                             <span className="text-sm">
-                                Posted on {new Date(item.date).toLocaleDateString("en-GB").replace(/\//g, "-")}
+                                Posted on {new Date(item.created_at).toLocaleDateString("en-GB").replace(/\//g, "-")}
                             </span>
                             <span>•</span>
 

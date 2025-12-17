@@ -48,7 +48,7 @@ export function ItemsClient({ lostItems, foundItems }: ItemsBrowseProps) {
     const filteredFoundItems = filterItems(foundItems).map(formatItem);
 
     let userItems = [...filteredFoundItems, ...filteredLostItems];
-    userItems.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    userItems.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Sort by lost/found date in descending order
 
     return (
         <>

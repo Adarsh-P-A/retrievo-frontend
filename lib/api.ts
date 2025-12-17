@@ -60,7 +60,7 @@ export async function fetchAllItems(token?: string) {
             console.error("fetchAllItems failed:", res.status);
             return {
                 ok: false,
-                data: { lost_items: [], found_items: [] },
+                data: { items: [] },
                 status: res.status,
             };
         }
@@ -71,7 +71,7 @@ export async function fetchAllItems(token?: string) {
 
         return {
             ok: false,
-            data: { lost_items: [], found_items: [] },
+            data: { items: [] },
             error: String(err),
         };
     }
