@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchUserProfile } from '@/lib/api';
+import { formatDate } from '@/lib/date-formatting';
 import { Item } from '@/types/item';
 import { User } from '@/types/user';
 
@@ -18,8 +19,8 @@ export default async function UserPage({ params }: { params: Promise<{ user_id: 
         const res = await fetchUserProfile(user_id);
 
         user = res.data.user;
-        foundItems = res.data.found_items;
-        lostItems = res.data.lost_items;
+        foundItems = res.data.found_items.map(formatDate);
+        lostItems = res.data.lost_items.map(formatDate);
     } catch (err) {
         console.error("Error fetching user profile items:", err);
         throw err;

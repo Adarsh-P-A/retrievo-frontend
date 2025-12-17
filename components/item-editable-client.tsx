@@ -155,7 +155,7 @@ export default function ItemEditable({ item, reporter, session }: ItemEditablePr
                         </div>
                     </ImageViewer>
 
-                    <div className="hidden lg:block">
+                    <div>
                         <h3 className="text-lg font-semibold mb-3">Description</h3>
 
                         <Card className={cn(
@@ -406,7 +406,7 @@ export default function ItemEditable({ item, reporter, session }: ItemEditablePr
                         </div>
                     </div>
                     <div className="space-y-3">
-                        {item.type === "found" ? (
+                        {item.type === "found" && !canEdit ? (
                             <Button size="lg" className="w-full h-12 text-lg shadow-sm mb-6">
                                 This is Mine!
                             </Button>

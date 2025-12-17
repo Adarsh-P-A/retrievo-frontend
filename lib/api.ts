@@ -130,47 +130,6 @@ export async function fetchAllUserItems(token?: string) {
     }
 }
 
-// GET: Found Items by Category for a Specific User
-export async function fetchFoundUserItems(
-    lostItemCategory: string,
-    token?: string
-) {
-    const VALID_CATEGORIES = [
-        "electronics",
-        "clothing",
-        "bags",
-        "keys-wallets",
-        "documents",
-        "others",
-    ];
-
-    if (!VALID_CATEGORIES.includes(lostItemCategory)) {
-        console.error("Invalid category:", lostItemCategory);
-        return { items: [] };
-    }
-
-    try {
-        const res = await fetch(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/profile/found-items?category=${lostItemCategory}`, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (res.status === 401) throw new UnauthorizedError();
-
-        if (!res.ok) {
-            console.error("fetchFoundUserItems failed:", res.status);
-            return { items: [] };
-        }
-
-        return await safeJson(res);
-    } catch (err) {
-        if (err instanceof UnauthorizedError) throw err;
-
-        console.error("fetchFoundUserItems error:", err);
-        return { items: [] };
-    }
-}
-
 // GET: User Profile Information
 export const fetchUserProfile = async (user_id?: string) => {
     try {

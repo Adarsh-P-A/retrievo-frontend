@@ -14,18 +14,6 @@ interface ItemsBrowseProps {
     foundItems: Item[];
 }
 
-// Helper function to format item data
-function formatItem(item: Item) {
-    const formattedDate = new Date(item.date)
-        .toLocaleDateString("en-GB")
-        .replace(/\//g, "-");
-
-    return {
-        ...item,
-        date: formattedDate,
-    };
-}
-
 export function ItemsClient({ lostItems, foundItems }: ItemsBrowseProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('all');
@@ -44,8 +32,8 @@ export function ItemsClient({ lostItems, foundItems }: ItemsBrowseProps) {
         });
     };
 
-    const filteredLostItems = filterItems(lostItems).map(formatItem);
-    const filteredFoundItems = filterItems(foundItems).map(formatItem);
+    const filteredLostItems = filterItems(lostItems);
+    const filteredFoundItems = filterItems(foundItems);
 
     let userItems = [...filteredFoundItems, ...filteredLostItems];
     userItems.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Sort by lost/found date in descending order
