@@ -1,4 +1,4 @@
-import { fetchAllItems } from '@/lib/api';
+import { fetchAllItems } from '@/lib/api/server';
 import { ItemsClient } from './items-browsing-client';
 import { Item } from '@/types/item';
 import { auth } from '@/auth';

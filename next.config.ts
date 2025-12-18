@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 if (!process.env.DOCKER) {
   dotenv.config({
-    path: path.resolve(__dirname, "..", ".env.frontend"),
+    path: path.resolve(__dirname, "..", ".env.frontend.local"),
   });
 }
 

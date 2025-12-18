@@ -1,0 +1,108 @@
+import { safeJson, UnauthorizedError } from "./helpers";
+
+// POST: Lost or Found Item
+export async function postLostFoundItem(
+    formData: FormData,
+    token?: string
+) {
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/items/`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            body: formData,
+        });
+
+        if (res.status === 401) throw new UnauthorizedError();
+
+        if (!res.ok) {
+            console.error("postLostFoundItem failed:", res.status);
+            return { ok: false, status: res.status };
+        }
+
+        return { ok: true, data: await safeJson(res) };
+    } catch (err) {
+        if (err instanceof UnauthorizedError) throw err;
+
+        console.error("postLostFoundItem error:", err);
+        return { ok: false, error: String(err) };
+    }
+}
+
+// PATCH: Update single item fields
+export async function updateItem(itemId: string, data: Record<string, any>, token?: string) {
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/items/${itemId}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (res.status === 401) throw new UnauthorizedError();
+
+        if (!res.ok) {
+            console.error("updateItem failed:", res.status);
+            return { ok: false, status: res.status };
+        }
+
+        return { ok: true, data: await safeJson(res) };
+    } catch (err) {
+        if (err instanceof UnauthorizedError) throw err;
+
+        console.error("updateItem error:", err);
+        return { ok: false, error: String(err) };
+    }
+}
+
+// DELETE: Delete an item
+export async function deleteItem(itemId: string, token?: string) {
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/items/${itemId}`, {
+            method: "DELETE",
+            headers: {
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+        });
+
+        if (res.status === 401) throw new UnauthorizedError();
+
+        if (!res.ok) {
+            console.error("deleteItem failed:", res.status);
+            return { ok: false, status: res.status };
+        }
+
+        return { ok: true };
+    } catch (err) {
+        if (err instanceof UnauthorizedError) throw err;
+
+        console.error("deleteItem error:", err);
+        return { ok: false, error: String(err) };
+    }
+}
+
+// POST: Set User Hostel
+export const setHostel = async (hostel: string, token?: string) => {
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/profile/set-hostel/${hostel}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!res.ok) {
+            console.error("setHostel failed:", res.status);
+            return { ok: false, status: res.status };
+        }
+
+        return { ok: true };
+    } catch (err) {
+        console.error("setHostel error:", err);
+        return { ok: false, error: String(err) };
+    }
+}

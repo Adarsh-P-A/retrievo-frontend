@@ -30,7 +30,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation'; // Add this import
-import { postLostFoundItem, UnauthorizedError } from '@/lib/api';
+import { postLostFoundItem } from '@/lib/api/client';
+import { UnauthorizedError } from '@/lib/api/helpers';
 import { signIn } from "next-auth/react";
 import type { Session } from 'next-auth';
 import { ImageViewer } from './image-viewer';

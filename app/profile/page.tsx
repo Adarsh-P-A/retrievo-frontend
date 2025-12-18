@@ -1,10 +1,11 @@
 import { auth } from '@/auth';
 import { ProfileClient } from '@/app/profile/profile-client';
-import { fetchAllUserItems, UnauthorizedError } from '@/lib/api';
 import { Item } from '@/types/item';
 import { redirect } from 'next/navigation';
 import { SessionProvider } from 'next-auth/react';
 import { formatDate } from '@/lib/date-formatting';
+import { fetchAllUserItems } from '@/lib/api/server';
+import { UnauthorizedError } from '@/lib/api/helpers';
 
 export default async function ProfilePage() {
     const session = await auth();

@@ -2,7 +2,7 @@ import { ItemCard } from '@/components/item-card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { fetchUserProfile } from '@/lib/api';
+import { fetchUserProfile } from '@/lib/api/server';
 import { formatDate } from '@/lib/date-formatting';
 import { Item } from '@/types/item';
 import { User } from '@/types/user';

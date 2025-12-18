@@ -10,7 +10,7 @@ import { signOut, useSession } from 'next-auth/react';  // Add useSession
 import type { Session } from 'next-auth';
 import { Item } from '@/types/item';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { setHostel } from '@/lib/api';
+import { setHostel } from '@/lib/api/client';
 import { useEffect, useState, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';

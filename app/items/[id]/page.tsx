@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Loading from "../loading";
 import { notFound } from "next/navigation";
-import { fetchItem } from "@/lib/api";
+import { fetchItem } from "@/lib/api/server";
 import { auth } from "@/auth";
 import ItemEditable from "@/components/item-editable-client";
 
