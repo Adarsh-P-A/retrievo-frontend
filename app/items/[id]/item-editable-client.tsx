@@ -14,14 +14,14 @@ import { MoreHorizontal, Trash2, Calendar, MapPin, Flag, Share2, User, Pencil, X
 import { updateItem, deleteItem } from "@/lib/api/client";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
+import { ImageViewer } from "@/components/image-viewer";
+import { Textarea } from "@/components/ui/textarea";
 import { Item } from "@/types/item";
 import { Session } from "next-auth";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Card, CardContent } from "./ui/card";
-import { ImageViewer } from "./image-viewer";
-import { Textarea } from "./ui/textarea";
 import { User as UserType } from "@/types/user";
 import {
     DropdownMenu,

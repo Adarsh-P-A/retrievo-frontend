@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Search, PlusCircle } from 'lucide-react';
 import { auth } from "@/auth";
 import { LoginButton } from './login-button';
+import { NotificationsDropdown } from './notifications-dropdown';
 
 export async function Navbar() {
     const session = await auth();
@@ -41,6 +42,7 @@ export async function Navbar() {
                 </div>
 
                 <div className="flex items-center gap-4">
+                    {session?.user && <NotificationsDropdown />}
                     <LoginButton session={session} />
                 </div>
             </div>
