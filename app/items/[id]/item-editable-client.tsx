@@ -11,7 +11,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { MoreHorizontal, Trash2, Calendar, MapPin, Flag, Share2, User, Pencil, X } from "lucide-react";
-import { updateItem, deleteItem } from "@/lib/api/client";
+import { updateItem, deleteItem, createResolution } from "@/lib/api/client";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -40,18 +40,27 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
+import { stat } from "fs";
 
 interface ItemEditableProps {
     item: Item;
     reporter: UserType;
+    status: 'none' | 'pending' | 'approved' | 'rejected';
     session: Session | null;
 }
 
-export default function ItemEditable({ item, reporter, session }: ItemEditableProps) {
+export default function ItemEditable({ item, reporter, status, session }: ItemEditableProps) {
     const router = useRouter();
+
     const [isEditing, setIsEditing] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+
+    const [isClaiming, setIsClaiming] = useState(false)
+    const [claimText, setClaimText] = useState("")
+    const [isSubmittingClaim, setIsSubmittingClaim] = useState(false)
+
+    const [myClaimStatus, setMyClaimStatus] = useState(status);
 
     const [formData, setFormData] = useState({
         title: item.title ?? "",
@@ -63,6 +72,7 @@ export default function ItemEditable({ item, reporter, session }: ItemEditablePr
     });
 
     const canEdit = !!session && reporter.public_id === session.user?.public_id;
+    const canClaim = item.type === "found" && !canEdit && myClaimStatus === 'none';
 
     const handleSave = async () => {
         setIsSaving(true);
@@ -406,8 +416,18 @@ export default function ItemEditable({ item, reporter, session }: ItemEditablePr
                         </div>
                     </div>
                     <div className="space-y-3">
-                        {item.type === "found" && !canEdit ? (
-                            <Button size="lg" className="w-full h-12 text-lg shadow-sm mb-6">
+                        {canClaim ? (
+                            <Button
+                                size="lg"
+                                className="w-full h-12 text-lg shadow-sm mb-6"
+                                onClick={() => {
+                                    if (!session) {
+                                        router.push(`/auth/signin?callbackUrl=/items/${item.id}`)
+                                        return
+                                    }
+                                    setIsClaiming(true)
+                                }}
+                            >
                                 This is Mine!
                             </Button>
                         ) : null}
@@ -469,6 +489,64 @@ export default function ItemEditable({ item, reporter, session }: ItemEditablePr
                             <Trash2 className="mr-2 h-4 w-4" />
                             Delete permanently
                             {/* </Button> */}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog open={isClaiming} onOpenChange={setIsClaiming}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Claim this item</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Describe details that prove this item belongs to you.
+                            These details will be shared only with the finder.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+
+                    <Textarea
+                        value={claimText}
+                        onChange={(e) => setClaimText(e.target.value)}
+                        placeholder="Describe details that prove this item is yours (marks, contents, damage, when you lost it, etc.). Minimum 20 characters."
+                        className="min-h-[120px] resize-none mt-4"
+                        disabled={isSubmittingClaim}
+                    />
+
+                    <AlertDialogFooter className="mt-6">
+                        <AlertDialogCancel asChild>
+                            <Button variant="outline" disabled={isSubmittingClaim}>
+                                Cancel
+                            </Button>
+                        </AlertDialogCancel>
+
+                        <AlertDialogAction
+                            disabled={claimText.trim().length < 20 || isSubmittingClaim}
+                            onClick={async () => {
+                                try {
+                                    setIsSubmittingClaim(true)
+
+                                    const res = await createResolution(
+                                        item.id,
+                                        claimText,
+                                        session?.backendToken
+                                    )
+
+                                    if (res.ok) {
+                                        toast.success("Claim sent to finder for verification")
+                                        setMyClaimStatus("pending");
+                                        setIsClaiming(false)
+                                        setClaimText("")
+                                    } else {
+                                        toast.error("Failed to submit claim. Please try again.")
+                                    }
+                                } catch {
+                                    toast.error("Failed to submit claim. Please try again.")
+                                } finally {
+                                    setIsSubmittingClaim(false)
+                                }
+                            }}
+                        >
+                            Submit claim
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

@@ -84,7 +84,7 @@ export async function fetchAllUserItems(token?: string) {
 }
 
 // GET: User Profile Information
-export const fetchUserProfile = async (user_id?: string) => {
+export async function fetchUserProfile(user_id?: string) {
     try {
         const res = await fetch(`${process.env.INTERNAL_BACKEND_URL}/profile/${user_id}`);
 
@@ -104,6 +104,27 @@ export const fetchUserProfile = async (user_id?: string) => {
         return { ok: true, data: await safeJson(res) };
     } catch (err) {
         console.error("fetchUserProfile error:", err);
+        return { ok: false, data: null, error: String(err) };
+    }
+}
+
+export async function fetchItemClaimStatus(itemId: string, token?: string) {
+    try {
+        const res = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/items/${itemId}/claim-status`, {
+            headers: {
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            }
+        });
+
+        if (!res.ok) {
+            console.error("fetchItemClaimStatus failed:", res.status);
+            return { ok: false, data: null, status: res.status };
+        }
+
+        return { ok: true, data: await safeJson(res) };
+    } catch (err) {
+        console.error("fetchItemClaimStatus error:", err);
         return { ok: false, data: null, error: String(err) };
     }
 }

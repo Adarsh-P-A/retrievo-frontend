@@ -1,12 +1,9 @@
 import { safeJson, UnauthorizedError } from "./helpers";
 
 // POST: Lost or Found Item
-export async function postLostFoundItem(
-    formData: FormData,
-    token?: string
-) {
+export async function postLostFoundItem(formData: FormData, token?: string) {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/items/`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/items/create`, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -85,7 +82,7 @@ export async function deleteItem(itemId: string, token?: string) {
 }
 
 // POST: Set User Hostel
-export const setHostel = async (hostel: string, token?: string) => {
+export async function setHostel(hostel: string, token?: string) {
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/profile/set-hostel/${hostel}`, {
             method: "POST",
@@ -103,6 +100,29 @@ export const setHostel = async (hostel: string, token?: string) => {
         return { ok: true };
     } catch (err) {
         console.error("setHostel error:", err);
+        return { ok: false, error: String(err) };
+    }
+}
+
+export async function createResolution(itemId: string, description: string, token?: string) {
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/resolutions/create`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ found_item_id: itemId, claim_description: description }),
+        });
+
+        if (!res.ok) {
+            console.error("createResolution failed:", res.status);
+            return { ok: false, status: res.status };
+        }
+
+        return { ok: true, data: await safeJson(res) };
+    } catch (err) {
+        console.error("createResolution error:", err);
         return { ok: false, error: String(err) };
     }
 }

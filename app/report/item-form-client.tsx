@@ -34,7 +34,7 @@ import { postLostFoundItem } from '@/lib/api/client';
 import { UnauthorizedError } from '@/lib/api/helpers';
 import { signIn } from "next-auth/react";
 import type { Session } from 'next-auth';
-import { ImageViewer } from './image-viewer';
+import { ImageViewer } from '@/components/image-viewer';
 
 
 const formSchema = z.object({
@@ -293,11 +293,15 @@ export function ItemFormClient({ session }: ItemFormClientProps) {
                                         <FormLabel>Description</FormLabel>
                                         <FormControl>
                                             <Textarea
-                                                placeholder="Provide as much detail as possible (color, size, distinguishing marks, etc.)"
+                                                placeholder="Mention where it was found or its general appearance. Avoid sharing unique identifying details."
                                                 className="resize-none min-h-[120px]"
                                                 {...field}
                                             />
                                         </FormControl>
+
+                                        <FormDescription>
+                                            Keep identifying details private so the rightful owner can confirm it's theirs.
+                                        </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
