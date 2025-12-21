@@ -102,7 +102,7 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
             return;
         }
 
-        const res = await updateItem(item.id, updates, session?.backendToken);
+        const res = await updateItem(item.id, updates);
 
         if (res.ok) {
             toast.success("Item updated successfully");
@@ -128,7 +128,7 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
     };
 
     const handleDelete = async () => {
-        const res = await deleteItem(item.id, session?.backendToken);
+        const res = await deleteItem(item.id);
 
         if (res.ok) {
             toast.success("Item deleted successfully");
@@ -525,11 +525,7 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
                                 try {
                                     setIsSubmittingClaim(true)
 
-                                    const res = await createResolution(
-                                        item.id,
-                                        claimText,
-                                        session?.backendToken
-                                    )
+                                    const res = await createResolution(item.id, claimText)
 
                                     if (res.ok) {
                                         toast.success("Claim sent to finder for verification")

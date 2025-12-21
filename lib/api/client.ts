@@ -1,12 +1,21 @@
+"use server";
+
+import { auth } from "@/auth";
 import { safeJson, UnauthorizedError } from "./helpers";
 
 // POST: Lost or Found Item
-export async function postLostFoundItem(formData: FormData, token?: string) {
+export async function postLostFoundItem(formData: FormData) {
+    const session = await auth();
+
+    if (!session?.backendToken) {
+        throw new UnauthorizedError();
+    }
+
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/items/create`, {
+        const res = await fetch(`${process.env.INTERNAL_BACKEND_URL}/items/create`, {
             method: "POST",
             headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${session.backendToken}`,
             },
             body: formData,
         });
@@ -28,13 +37,19 @@ export async function postLostFoundItem(formData: FormData, token?: string) {
 }
 
 // PATCH: Update single item fields
-export async function updateItem(itemId: string, data: Record<string, any>, token?: string) {
+export async function updateItem(itemId: string, data: Record<string, any>) {
+    const session = await auth();
+
+    if (!session?.backendToken) {
+        throw new UnauthorizedError();
+    }
+
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/items/${itemId}`, {
+        const res = await fetch(`${process.env.INTERNAL_BACKEND_URL}/items/${itemId}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                Authorization: `Bearer ${session.backendToken}`,
             },
             body: JSON.stringify(data),
         });
@@ -56,12 +71,18 @@ export async function updateItem(itemId: string, data: Record<string, any>, toke
 }
 
 // DELETE: Delete an item
-export async function deleteItem(itemId: string, token?: string) {
+export async function deleteItem(itemId: string) {
+    const session = await auth();
+
+    if (!session?.backendToken) {
+        throw new UnauthorizedError();
+    }
+
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/items/${itemId}`, {
+        const res = await fetch(`${process.env.INTERNAL_BACKEND_URL}/items/${itemId}`, {
             method: "DELETE",
             headers: {
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                Authorization: `Bearer ${session.backendToken}`,
             },
         });
 
@@ -82,13 +103,19 @@ export async function deleteItem(itemId: string, token?: string) {
 }
 
 // POST: Set User Hostel
-export async function setHostel(hostel: string, token?: string) {
+export async function setHostel(hostel: string) {
+    const session = await auth();
+
+    if (!session?.backendToken) {
+        throw new UnauthorizedError();
+    }
+
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/profile/set-hostel/${hostel}`, {
+        const res = await fetch(`${process.env.INTERNAL_BACKEND_URL}/profile/set-hostel/${hostel}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${session.backendToken}`,
             },
         });
 
@@ -104,13 +131,19 @@ export async function setHostel(hostel: string, token?: string) {
     }
 }
 
-export async function createResolution(itemId: string, description: string, token?: string) {
+export async function createResolution(itemId: string, description: string) {
+    const session = await auth();
+
+    if (!session?.backendToken) {
+        throw new UnauthorizedError();
+    }
+
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/resolutions/create`, {
+        const res = await fetch(`${process.env.INTERNAL_BACKEND_URL}/resolutions/create`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${session.backendToken}`,
             },
             body: JSON.stringify({ found_item_id: itemId, claim_description: description }),
         });

@@ -92,7 +92,7 @@ export function ItemFormClient({ session }: ItemFormClientProps) {
                 }
             });
 
-            const res = await postLostFoundItem(formData, session.backendToken);
+            const res = await postLostFoundItem(formData);
 
             if (!res.ok) {
                 alert("Failed to submit item. Please try again.");
