@@ -248,3 +248,142 @@ export async function readAllNotifications() {
         return { ok: false, error: String(err) };
     }
 }
+
+// GET: Fetch latest claim for specific item
+export async function getClaimForReview(itemID: string) {
+    const session = await auth();
+
+    if (!session?.backendToken) {
+        throw new UnauthorizedError();
+    }
+
+    try {
+        const res = await fetch(`${BACKEND_URL}/resolutions/item/${itemID}`, {
+            headers: {
+                Authorization: `Bearer ${session.backendToken}`,
+            },
+        });
+
+        if (!res.ok) {
+            console.error("getClaimForReview failed:", res.status);
+            return {
+                ok: false, data: {
+                    "resolution": null,
+                },
+                status: res.status
+            };
+        }
+
+        return { ok: true, data: await safeJson(res) };
+    } catch (err) {
+        if (err instanceof UnauthorizedError) throw err;
+
+        console.error("getClaimForReview error:", err);
+        return {
+            ok: false, data: {
+                "resolution": null,
+            }, error: String(err)
+        };
+    }
+}
+
+// GET: Fetch resolution status by ID (for claimants)
+export async function getResolutionStatus(resolutionId: string) {
+    const session = await auth();
+
+    if (!session?.backendToken) {
+        throw new UnauthorizedError();
+    }
+
+    try {
+        const res = await fetch(`${BACKEND_URL}/resolutions/${resolutionId}`, {
+            headers: {
+                Authorization: `Bearer ${session.backendToken}`,
+            },
+        });
+
+        if (res.status === 401) throw new UnauthorizedError();
+
+        if (!res.ok) {
+            return {
+                ok: false,
+                data: null,
+                status: res.status
+            };
+        }
+
+        return { ok: true, data: await safeJson(res) };
+    } catch (err) {
+        if (err instanceof UnauthorizedError) throw err;
+
+        console.error("getResolutionStatus error:", err);
+        return {
+            ok: false,
+            data: null,
+            error: String(err)
+        };
+    }
+}
+
+// POST: Approve a claim
+export async function approveClaim(claimId: string) {
+    const session = await auth();
+
+    if (!session?.backendToken) {
+        throw new UnauthorizedError();
+    }
+
+    try {
+        const res = await fetch(`${BACKEND_URL}/resolutions/${claimId}/approve`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${session.backendToken}`,
+            },
+        });
+
+        if (!res.ok) {
+            console.error("approveClaim failed:", res.status);
+            return { ok: false, status: res.status };
+        }
+
+        return { ok: true, data: await safeJson(res) };
+    } catch (err) {
+        if (err instanceof UnauthorizedError) throw err;
+
+        console.error("approveClaim error:", err);
+        return { ok: false, error: String(err) };
+    }
+}
+
+// POST: Reject a claim
+export async function rejectClaim(resolutionID: string, rejectionReason: string) {
+    const session = await auth();
+
+    if (!session?.backendToken) {
+        throw new UnauthorizedError();
+    }
+
+    try {
+        const res = await fetch(`${BACKEND_URL}/resolutions/reject`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${session.backendToken}`,
+            },
+            body: JSON.stringify({ resolutionID: resolutionID, rejection_reason: rejectionReason }),
+        });
+
+        if (!res.ok) {
+            console.error("rejectClaim failed:", res.status);
+            return { ok: false, status: res.status };
+        }
+
+        return { ok: true };
+    } catch (err) {
+        if (err instanceof UnauthorizedError) throw err;
+
+        console.error("rejectClaim error:", err);
+        return { ok: false, error: String(err) };
+    }
+}

@@ -7,5 +7,6 @@ export interface Notification {
     title: string;
     message: string;
     item_id?: string;
+    resolution_id?: string;
     is_read: boolean;
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { Bell, Check, Info, AlertTriangle, Ban, X, CheckCheck, Inbox, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -17,22 +17,20 @@ import Link from "next/link"
 import { formatDistanceToNow } from "date-fns"
 import { getNotifications, readAllNotifications, readNotification } from "@/lib/api/client"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 interface NotificationsDropdownProps {
     count: number
 }
 
 export function NotificationsDropdown({ count: initialCount }: NotificationsDropdownProps) {
+    const router = useRouter();
+
     const [isOpen, setIsOpen] = useState(false)
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [isLoading, setIsLoading] = useState(false)
     const [unreadCount, setUnreadCount] = useState(initialCount)
     const [hasFetched, setHasFetched] = useState(false)
-
-    // Sync unread count if initialCount changes from parent (SSR)
-    useEffect(() => {
-        setUnreadCount(initialCount)
-    }, [initialCount])
 
     const fetchNotifications = async () => {
         if (hasFetched) return
@@ -40,6 +38,8 @@ export function NotificationsDropdown({ count: initialCount }: NotificationsDrop
         setIsLoading(true)
         try {
             const res = await getNotifications();
+
+            console.log(res.data);
 
             setNotifications(res.data.notifications);
             setHasFetched(true);
@@ -100,8 +100,22 @@ export function NotificationsDropdown({ count: initialCount }: NotificationsDrop
                 "flex items-start gap-3 p-3 cursor-pointer focus:bg-muted/50 rounded-lg my-1 transition-colors",
                 !notification.is_read && "bg-muted/30"
             )}
-            onClick={(e) => {
-                markAsRead(notification.id)
+            onClick={() => {
+                if (!notification.is_read) {
+                    markAsRead(notification.id);
+                }
+
+                // Route based on notification type
+                if (notification.type === "claim_created") {
+                    // Finder reviewing claim - go to item review page
+                    router.push(`/items/${notification.item_id}/review-claim`)
+                } else if (notification.type === "claim_approved" || notification.type === "claim_rejected") {
+                    // Claimant viewing status - go to claim status page
+                    router.push(`/claims/${notification.resolution_id}`)
+                } else if (notification.item_id) {
+                    // Default: go to item page
+                    router.push(`/items/${notification.item_id}`)
+                }
             }}
         >
             <div className="mt-0.5 shrink-0">
@@ -109,25 +123,23 @@ export function NotificationsDropdown({ count: initialCount }: NotificationsDrop
             </div>
             <div className="flex-1 space-y-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
-                    <p className={cn("text-sm font-medium leading-none truncate", !notification.is_read && "text-foreground")}>
+                    <p
+                        className={cn(
+                            "text-sm font-medium leading-none truncate",
+                            !notification.is_read && "text-foreground"
+                        )}
+                    >
                         {notification.title}
                     </p>
+
                     <span className="text-[10px] text-muted-foreground shrink-0">
                         {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
                     </span>
                 </div>
+
                 <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                     {notification.message}
                 </p>
-                {notification.item_id && (
-                    <Link
-                        href={`/items/${notification.item_id}`}
-                        className="text-[10px] font-medium text-primary hover:underline mt-1.5 inline-flex items-center gap-1"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        View Details
-                    </Link>
-                )}
             </div>
             {!notification.is_read && (
                 <div className="shrink-0 self-center">

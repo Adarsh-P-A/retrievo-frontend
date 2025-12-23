@@ -54,8 +54,8 @@ export async function fetchItem(itemId: string, token?: string) {
     }
 }
 
-// GET: All Items for a Specific User
-export async function fetchAllUserItems(token?: string) {
+// GET: All Items for a Current User
+export async function fetchAllUserItems(token: string) {
     try {
         const res = await fetch(`${BACKEND_URL}/profile/items`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -86,9 +86,11 @@ export async function fetchAllUserItems(token?: string) {
 }
 
 // GET: User Profile Information
-export async function fetchUserProfile(user_id?: string) {
+export async function fetchUserProfile(public_id: string, token?: string) {
     try {
-        const res = await fetch(`${BACKEND_URL}/profile/${user_id}`);
+        const res = await fetch(`${BACKEND_URL}/profile/${public_id}`, {
+            headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        });
 
         if (!res.ok) {
             console.error("fetchUserProfile failed:", res.status);

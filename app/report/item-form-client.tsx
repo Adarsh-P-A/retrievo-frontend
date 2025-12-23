@@ -352,7 +352,7 @@ export function ItemFormClient({ session }: ItemFormClientProps) {
                                                         <img
                                                             src={preview}
                                                             alt="Preview"
-                                                            className="h-full w-full object-cover"
+                                                            className="absolute inset-0 w-full h-full object-cover"
                                                         />
                                                         <Button
                                                             type="button"

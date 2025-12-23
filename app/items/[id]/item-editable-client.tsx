@@ -40,12 +40,11 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
-import { stat } from "fs";
 
 interface ItemEditableProps {
     item: Item;
     reporter: UserType;
-    claim_status: 'none' | 'pending' | 'approved' | 'rejected';
+    claim_status: "none" | "pending" | "approved";
     session: Session | null;
 }
 
@@ -74,7 +73,7 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
     const canEdit = !!session && reporter.public_id === session.user?.public_id;
     const canClaim = item.type === "found" && myClaimStatus === "none" && !canEdit;
 
-    const handleSave = async () => {
+    async function handleSave() {
         setIsSaving(true);
 
         // Calculate diff - only send changed fields
@@ -84,10 +83,9 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
         for (const key of Object.keys(formData) as (keyof typeof formData)[]) {
             const newValue = formData[key];
 
-            const oldValue =
-                key === "date"
-                    ? new Date(item.date).toISOString().slice(0, 10)
-                    : item[key] ?? "";
+            const oldValue = key === "date"
+                ? new Date(item.date).toISOString().slice(0, 10)
+                : item[key] ?? "";
 
             if (newValue !== oldValue) {
                 updates[key] =
@@ -113,9 +111,9 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
         }
 
         setIsSaving(false);
-    };
+    }
 
-    const handleCancel = () => {
+    function handleCancel() {
         setFormData({
             title: item.title ?? "",
             location: item.location ?? "",
@@ -127,7 +125,7 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
         setIsEditing(false);
     };
 
-    const handleDelete = async () => {
+    async function handleDelete() {
         const res = await deleteItem(item.id);
 
         if (res.ok) {
@@ -138,7 +136,18 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
         }
 
         setIsDeleting(false);
-    };
+    }
+
+    function mapClaimStatusToText(status: string) {
+        switch (status) {
+            case "pending":
+                return "Claim Pending";
+            case "approved":
+                return "Claim Approved";
+            case "rejected":
+                return "Claim Rejected";
+        }
+    }
 
     return (
         <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-4rem)]">
@@ -152,15 +161,23 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
                                 alt={item.title}
                                 className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
                             />
-                            <div className="absolute top-4 left-4">
+                            <div className="absolute top-4 left-4 flex flex-row gap-2 p-2 rounded-lg">
                                 <Badge
                                     className={`text-lg px-4 py-1.5 shadow-md text-white ${item.type === "lost"
-                                        ? "bg-red-500 hover:bg-red-600 border-red-600"
-                                        : "bg-emerald-500 hover:bg-emerald-600 border-emerald-600"
+                                        ? "bg-red-500 hover:bg-red-600"
+                                        : "bg-emerald-500 hover:bg-emerald-600"
                                         }`}
                                 >
                                     {item.type === "lost" ? "Lost" : "Found"}
                                 </Badge>
+
+                                {claim_status !== "none" && (
+                                    <Badge
+                                        className="text-lg px-4 py-1.5 shadow-md bg-amber-500 text-white hover:bg-amber-600"
+                                    >
+                                        {mapClaimStatusToText(myClaimStatus)}
+                                    </Badge>
+                                )}
                             </div>
                         </div>
                     </ImageViewer>
@@ -532,6 +549,8 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
                                         setMyClaimStatus("pending");
                                         setIsClaiming(false)
                                         setClaimText("")
+                                    } else if (res.status == 409) {
+                                        toast.error("You have already submitted a claim for this item.")
                                     } else {
                                         toast.error("Failed to submit claim. Please try again.")
                                     }
