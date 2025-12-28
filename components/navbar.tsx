@@ -53,8 +53,8 @@ export async function Navbar() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    {session?.user && <NotificationsDropdown count={unreadCount} />}
-                    <LoginButton session={session} />
+                    {isAuthenticated && <NotificationsDropdown count={unreadCount} />}
+                    <LoginButton session={session} isAuthenticated={isAuthenticated} />
                 </div>
             </div>
         </nav>

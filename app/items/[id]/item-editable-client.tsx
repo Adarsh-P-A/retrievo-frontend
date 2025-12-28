@@ -40,7 +40,6 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
-import { is } from "date-fns/locale";
 
 interface ItemEditableProps {
     item: Item;
@@ -48,6 +47,12 @@ interface ItemEditableProps {
     claim_status: "none" | "pending" | "approved";
     session: Session | null;
 }
+
+const FIELD_LIMITS = {
+    title: { min: 3, max: 30 },
+    location: { min: 3, max: 30 },
+    description: { min: 20, max: 280 },
+};
 
 export default function ItemEditable({ item, reporter, claim_status, session }: ItemEditableProps) {
     const router = useRouter();
@@ -74,8 +79,43 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
     const canEdit = !!session && reporter.public_id === session.user?.public_id;
     const canClaim = item.type === "found" && myClaimStatus === "none" && !canEdit;
 
+    function validateForm(data: Record<string, string>): { valid: boolean; message?: string } {
+        for (const [key, limits] of Object.entries(FIELD_LIMITS)) {
+            const value = data[key]?.trim();
+            const capitalizedKey = key.slice(0, 1).toUpperCase() + key.slice(1);
+
+            if (!value) {
+                return { valid: false, message: `${capitalizedKey} cannot be empty.` };
+            }
+
+            if (value.length < limits.min) {
+                return {
+                    valid: false,
+                    message: `${capitalizedKey} must be at least ${limits.min} characters.`,
+                };
+            }
+
+            if (value.length > limits.max) {
+                return {
+                    valid: false,
+                    message: `${capitalizedKey} must be less than ${limits.max} characters.`,
+                };
+            }
+        }
+
+        return { valid: true };
+    }
+
     async function handleSave() {
         setIsSaving(true);
+
+        const validation = validateForm(formData);
+
+        if (!validation.valid) {
+            toast.error(validation.message);
+            setIsSaving(false);
+            return;
+        }
 
         // Calculate diff - only send changed fields
         const updates: Record<string, any> = {};
@@ -84,9 +124,8 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
         for (const key of Object.keys(formData) as (keyof typeof formData)[]) {
             const newValue = formData[key];
 
-            const oldValue = key === "date"
-                ? new Date(item.date).toISOString().slice(0, 10)
-                : item[key] ?? "";
+            const oldValue = key === "date" ?
+                new Date(item.date).toISOString().slice(0, 10) : item[key] ?? "";
 
             if (newValue !== oldValue) {
                 updates[key] =
