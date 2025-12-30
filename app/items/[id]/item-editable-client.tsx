@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -10,8 +9,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { MoreHorizontal, Trash2, Calendar, MapPin, Share2, User, Pencil, X } from "lucide-react";
+import { MoreHorizontal, Trash2, Calendar, MapPin,Flag, Share2, User, Pencil, X } from "lucide-react";
 import { updateItem, deleteItem, createResolution } from "@/lib/api/client";
+import { MoreHorizontal, Trash2, Calendar, MapPin, Flag, Share2, User, Pencil, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -21,7 +21,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Item } from "@/types/item";
 import { Session } from "next-auth";
 import Link from "next/link";
-import { toast } from "sonner";
 import { User as UserType } from "@/types/user";
 import { ReportButton } from "@/components/ui/alert-dialog";
 import {
@@ -41,7 +40,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
-import { is } from "date-fns/locale";
+import { useItemEditable } from "@/lib/hooks/use-item-editable";
 
 interface ItemEditableProps {
     item: Item;
@@ -147,6 +146,28 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
 
         setIsDeleting(false);
     }
+    const {
+        isEditing,
+        setIsEditing,
+        isDeleting,
+        setIsDeleting,
+        isSaving,
+        isClaiming,
+        setIsClaiming,
+        claimText,
+        setClaimText,
+        isSubmittingClaim,
+        myClaimStatus,
+        formData,
+        setFormData,
+        canEdit,
+        canClaim,
+        handleSave,
+        handleCancel,
+        handleDelete,
+        handleClaimSubmit,
+        handleShare
+    } = useItemEditable({ item, reporter, claim_status, session });
 
     const handleReportReceived = (reason: string) => {
     // bro send to backend API from here
@@ -469,6 +490,7 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
                         ) : null}
                         <div className="grid grid-cols-2 gap-3">
                             <Button
+                                onClick={handleShare}
                                 variant="ghost"
                                 size="sm"
                                 className="w-full text-muted-foreground py-3"
@@ -550,28 +572,7 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
 
                         <AlertDialogAction
                             disabled={claimText.trim().length < 20 || isSubmittingClaim}
-                            onClick={async () => {
-                                try {
-                                    setIsSubmittingClaim(true)
-
-                                    const res = await createResolution(item.id, claimText)
-
-                                    if (res.ok) {
-                                        toast.success("Claim sent to finder for verification")
-                                        setMyClaimStatus("pending");
-                                        setIsClaiming(false)
-                                        setClaimText("")
-                                    } else if (res.status == 409) {
-                                        toast.error("You have already submitted a claim for this item.")
-                                    } else {
-                                        toast.error("Failed to submit claim. Please try again.")
-                                    }
-                                } catch {
-                                    toast.error("Failed to submit claim. Please try again.")
-                                } finally {
-                                    setIsSubmittingClaim(false)
-                                }
-                            }}
+                            onClick={handleClaimSubmit}
                         >
                             Submit claim
                         </AlertDialogAction>
