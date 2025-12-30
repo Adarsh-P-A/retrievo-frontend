@@ -10,7 +10,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { MoreHorizontal, Trash2, Calendar, MapPin, Flag, Share2, User, Pencil, X } from "lucide-react";
+import { MoreHorizontal, Trash2, Calendar, MapPin, Share2, User, Pencil, X } from "lucide-react";
 import { updateItem, deleteItem, createResolution } from "@/lib/api/client";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -23,6 +23,7 @@ import { Session } from "next-auth";
 import Link from "next/link";
 import { toast } from "sonner";
 import { User as UserType } from "@/types/user";
+import { ReportButton } from "@/components/ui/alert-dialog";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -60,7 +61,15 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
     const [claimText, setClaimText] = useState("")
     const [isSubmittingClaim, setIsSubmittingClaim] = useState(false)
 
+
     const [myClaimStatus, setMyClaimStatus] = useState(claim_status);
+    const reasons = [
+        { value: "spam", label: "It is spam" },
+        { value: "harassment", label: "Harassment or bullying" },
+        { value: "inappropriate", label: "Inappropriate content" },
+        { value: "fake", label: "Fake information" },
+        { value: "other", label: "Other" },
+    ] 
 
     const [formData, setFormData] = useState({
         title: item.title ?? "",
@@ -139,6 +148,10 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
         setIsDeleting(false);
     }
 
+    const handleReportReceived = (reason: string) => {
+    // bro send to backend API from here
+  }
+
     function mapClaimStatusToText(status: string) {
         switch (status) {
             case "pending":
@@ -149,6 +162,8 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
                 return "Claim Rejected";
         }
     }
+
+      
 
     return (
         <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-4rem)]">
@@ -461,14 +476,7 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
                                 <Share2 className="w-4 h-4 mr-2" />
                                 Share
                             </Button>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className="w-full text-muted-foreground hover:text-destructive py-3"
-                            >
-                                <Flag className="w-4 h-4 mr-2" />
-                                Report
-                            </Button>
+                            <ReportButton  reasons={reasons} onReportSubmit={handleReportReceived}/>       
                         </div>
                     </div>
                 </div>

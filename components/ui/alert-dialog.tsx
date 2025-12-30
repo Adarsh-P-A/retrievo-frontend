@@ -5,6 +5,15 @@ import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
+import { Flag, ChevronDown } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useState } from "react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./dropdown-menu"
 
 function AlertDialog({
   ...props
@@ -154,4 +163,95 @@ export {
   AlertDialogDescription,
   AlertDialogAction,
   AlertDialogCancel,
+}
+
+interface ReportButtonProps {
+  reasons: any[];
+  onReportSubmit: (reason: string) => void; // A function that accepts a string
+}
+
+
+
+export function ReportButton({onReportSubmit, reasons}: ReportButtonProps) {
+  
+  const [reason, setReason] = useState("")
+  const [Reported, setIsReported] = useState(false);
+
+  const handleSubmit = () => {
+    onReportSubmit(reason)
+    setReason("") // Reset after submit
+    setIsReported(true)
+  }
+
+  return (
+    <AlertDialog>
+      {/*Report Button*/}
+      <AlertDialogTrigger asChild>
+        <Button
+            variant="ghost"
+            size="sm"
+            className={`w-full py-3 ${Reported ? 'text-destructive cursor-pointer':'text-muted-foreground hover:text-destructive '}`}
+        >
+            <Flag className="w-4 h-4 mr-2" />
+            {Reported ? `Reported`:'Report'}
+        </Button>
+      </AlertDialogTrigger>
+
+     <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Report Content</AlertDialogTitle>
+          <AlertDialogDescription>
+            Please select a reason for reporting.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        <div className="py-4">
+          <label className="text-sm font-medium text-gray-700 mb-2 block">
+            Reason for reporting
+          </label>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                className="w-full justify-between font-normal text-left"
+              >
+                {/* Show selected label or placeholder text */}
+                <span className={!reason ? "text-muted-foreground" : ""}>
+                  {reasons.find(r => r.value === reason)?.label ||  "Select a reason..."}
+                </span>
+                <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </DropdownMenuTrigger>
+            
+            <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width] min-w-[200px]">
+              {reasons.map((item) => (
+                <DropdownMenuItem
+                  key={item.value}
+                  onSelect={() => setReason(item.value)}
+                  className="cursor-pointer"
+                >
+                  {item.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        {/*Close & Submit Buttons */}
+        <AlertDialogFooter>
+          {/* This component automatically closes the modal when clicked */}
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          
+          <AlertDialogAction 
+            onClick={handleSubmit}
+            className="bg-red-700 hover:bg-red-800 text-white cursor-pointer"
+          >
+            Submit
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
 }
