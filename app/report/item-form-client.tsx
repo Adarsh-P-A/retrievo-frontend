@@ -29,7 +29,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { useRouter } from 'next/navigation'; // Add this import
+import { useRouter } from 'next/navigation';
 import { postLostFoundItem } from '@/lib/api/client';
 import { UnauthorizedError } from '@/lib/api/helpers';
 import { signIn } from "next-auth/react";
@@ -38,23 +38,39 @@ import { ImageViewer } from '@/components/image-viewer';
 
 
 const formSchema = z.object({
-    title: z.string().min(2, "Title must be at least 2 characters."),
-    description: z.string().min(10, "Description must be at least 10 characters."),
-    category: z.string().min(1, "Category is required"),
-    date: z.date({ message: "A date is required." }),
-    location: z.string().min(2, "Location must be at least 2 characters."),
-    visibility: z.enum(["public", "boys", "girls"]),
-    item_type: z.enum(["lost", "found"]),
+    title: z
+        .string()
+        .min(2, "Title must be at least 2 characters.")
+        .max(30, "Title must be at most 30 characters."),
+
+    description: z
+        .string()
+        .min(10, "Description must be at least 10 characters.")
+        .max(280, "Description must be at most 280 characters."),
+
+    category: z
+        .string()
+        .min(1, "Category is required")
+        .max(12, "Category must be at most 12 characters."), // 12 characters to accommodate "keys-wallets"
+
+    location: z
+        .string()
+        .min(2, "Location must be at least 2 characters.")
+        .max(30, "Location must be at most 30 characters."),
+
     image: z
         .instanceof(File, { message: "Image is required." })
-        .refine((file) => file.size <= 5 * 1024 * 1024, {
-            message: "Image must be under 5MB.",
+        .refine((file) => file.size <= 3 * 1024 * 1024, {
+            message: "Image must be under 3MB.",
         })
         .refine(
-            (file) =>
-                ["image/jpeg", "image/png", "image/webp"].includes(file.type),
+            (file) => ["image/jpeg", "image/png", "image/webp"].includes(file.type),
             { message: "Only JPG, PNG or WebP images are allowed." }
         ),
+
+    date: z.date({ message: "A date is required." }),
+    visibility: z.enum(["public", "boys", "girls"]),
+    item_type: z.enum(["lost", "found"]),
 });
 
 interface ItemFormClientProps {

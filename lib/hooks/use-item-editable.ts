@@ -57,12 +57,24 @@ export function useItemEditable({ item, reporter, claim_status, session }: UseIt
         for (const key of Object.keys(formData) as (keyof typeof formData)[]) {
             const newValue = formData[key];
 
-            const oldValue = key === "date" ?
-                new Date(item.date).toISOString().slice(0, 10) : item[key] ?? "";
+            if (key === "date") {
+                if (!newValue) continue;
+
+                const newDate = new Date(newValue).toISOString().slice(0, 10);
+                const oldDate = new Date(item.date).toISOString().slice(0, 10);
+
+                if (newDate !== oldDate) {
+                    updates.date = new Date(newValue).toISOString();
+                    hasChanges = true;
+                }
+
+                continue;
+            }
+
+            const oldValue = item[key] ?? "";
 
             if (newValue !== oldValue) {
-                updates[key] =
-                    key === "date" ? new Date(newValue).toISOString() : newValue;
+                updates[key] = newValue;
                 hasChanges = true;
             }
         }
@@ -143,13 +155,17 @@ export function useItemEditable({ item, reporter, claim_status, session }: UseIt
         try {
             if (navigator.share) {
                 await navigator.share(shareData);
-                toast.success("Share sheet opened");
             } else {
                 await navigator.clipboard.writeText(shareUrl);
                 toast.success("Link copied to clipboard");
             }
-        } catch (err) {
-            toast.error("Failed to share link");
+        } catch (err: any) {
+            // User cancelled → silently ignore
+            if (err?.name === "AbortError") return;
+
+            // Real failure
+            await navigator.clipboard.writeText(shareUrl);
+            toast.success("Link copied to clipboard");
         }
     }
 
