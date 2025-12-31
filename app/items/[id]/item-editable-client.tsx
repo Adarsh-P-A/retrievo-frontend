@@ -9,9 +9,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { MoreHorizontal, Trash2, Calendar, MapPin,Flag, Share2, User, Pencil, X } from "lucide-react";
-import { updateItem, deleteItem, createResolution } from "@/lib/api/client";
-import { MoreHorizontal, Trash2, Calendar, MapPin, Flag, Share2, User, Pencil, X } from "lucide-react";
+import { MoreHorizontal, Trash2, Calendar, MapPin, Share2, User, Pencil, X, Flag, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -22,7 +20,6 @@ import { Item } from "@/types/item";
 import { Session } from "next-auth";
 import Link from "next/link";
 import { User as UserType } from "@/types/user";
-import { ReportButton } from "@/components/ui/alert-dialog";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -52,126 +49,36 @@ interface ItemEditableProps {
 export default function ItemEditable({ item, reporter, claim_status, session }: ItemEditableProps) {
     const router = useRouter();
 
-    const [isEditing, setIsEditing] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
-
-    const [isClaiming, setIsClaiming] = useState(false)
-    const [claimText, setClaimText] = useState("")
-    const [isSubmittingClaim, setIsSubmittingClaim] = useState(false)
-
-
-    const [myClaimStatus, setMyClaimStatus] = useState(claim_status);
-    const reasons = [
-        { value: "spam", label: "It is spam" },
-        { value: "harassment", label: "Harassment or bullying" },
-        { value: "inappropriate", label: "Inappropriate content" },
-        { value: "fake", label: "Fake information" },
-        { value: "other", label: "Other" },
-    ] 
-
-    const [formData, setFormData] = useState({
-        title: item.title ?? "",
-        location: item.location ?? "",
-        description: item.description ?? "",
-        category: item.category ?? "",
-        visibility: item.visibility ?? "public",
-        date: item.date ? new Date(item.date).toISOString().slice(0, 10) : "",
-    });
-
-    const canEdit = !!session && reporter.public_id === session.user?.public_id;
-    const canClaim = item.type === "found" && myClaimStatus === "none" && !canEdit;
-
-    async function handleSave() {
-        setIsSaving(true);
-
-        // Calculate diff - only send changed fields
-        const updates: Record<string, any> = {};
-        let hasChanges = false;
-
-        for (const key of Object.keys(formData) as (keyof typeof formData)[]) {
-            const newValue = formData[key];
-
-            const oldValue = key === "date"
-                ? new Date(item.date).toISOString().slice(0, 10)
-                : item[key] ?? "";
-
-            if (newValue !== oldValue) {
-                updates[key] =
-                    key === "date" ? new Date(newValue).toISOString() : newValue;
-                hasChanges = true;
-            }
-        }
-
-        if (!hasChanges) {
-            setIsEditing(false);
-            setIsSaving(false);
-            return;
-        }
-
-        const res = await updateItem(item.id, updates);
-
-        if (res.ok) {
-            toast.success("Item updated successfully");
-            setIsEditing(false);
-            router.refresh();
-        } else {
-            toast.error("Failed to update item");
-        }
-
-        setIsSaving(false);
-    }
-
-    function handleCancel() {
-        setFormData({
-            title: item.title ?? "",
-            location: item.location ?? "",
-            description: item.description ?? "",
-            category: item.category ?? "",
-            visibility: item.visibility ?? "public",
-            date: item.date ? new Date(item.date).toISOString().slice(0, 10) : "",
-        });
-        setIsEditing(false);
-    };
-
-    async function handleDelete() {
-        const res = await deleteItem(item.id);
-
-        if (res.ok) {
-            toast.success("Item deleted successfully");
-            router.push("/items");
-        } else {
-            toast.error("Failed to delete item");
-        }
-
-        setIsDeleting(false);
-    }
     const {
+        reason,
+        setReason,
+        reasons_map,
+
         isEditing,
         setIsEditing,
         isDeleting,
         setIsDeleting,
         isSaving,
+        isReporting,
+        setIsReporting,
         isClaiming,
         setIsClaiming,
         claimText,
         setClaimText,
         isSubmittingClaim,
         myClaimStatus,
+
         formData,
         setFormData,
         canEdit,
         canClaim,
+
         handleSave,
         handleCancel,
         handleDelete,
         handleClaimSubmit,
         handleShare
     } = useItemEditable({ item, reporter, claim_status, session });
-
-    const handleReportReceived = (reason: string) => {
-    // bro send to backend API from here
-  }
 
     function mapClaimStatusToText(status: string) {
         switch (status) {
@@ -184,7 +91,7 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
         }
     }
 
-      
+
 
     return (
         <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-4rem)]">
@@ -498,7 +405,25 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
                                 <Share2 className="w-4 h-4 mr-2" />
                                 Share
                             </Button>
-                            <ReportButton  reasons={reasons} onReportSubmit={handleReportReceived}/>       
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="w-full text-muted-foreground hover:text-destructive py-3"
+                                onClick={() => {
+                                    const isAuthenticated =
+                                        !!session?.user && Date.now() < (session?.tokenExpires ?? 0);
+
+                                    if (!isAuthenticated) {
+                                        router.push(`/auth/signin?callbackUrl=/items/${item.id}`)
+                                        return
+                                    }
+
+                                    setIsReporting(true);
+                                }}
+                            >
+                                <Flag className="w-4 h-4 mr-2" />
+                                Report
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -575,6 +500,57 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
                             onClick={handleClaimSubmit}
                         >
                             Submit claim
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog open={isReporting} onOpenChange={setIsReporting}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Report</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Please select a reason for reporting.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                variant="outline"
+                                role="combobox"
+                                className="w-full justify-between font-normal text-left"
+                            >
+                                {/* Show selected label or placeholder text */}
+                                <span className={!reason ? "text-muted-foreground" : ""}>
+                                    {reasons_map.find(r => r.value === reason)?.label || "Select a reason..."}
+                                </span>
+                                <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width] min-w-[200px]">
+                            {reasons_map.map((item) => (
+                                <DropdownMenuItem
+                                    key={item.value}
+                                    onSelect={() => setReason(item.value)}
+                                    className="cursor-pointer"
+                                >
+                                    {item.label}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    {/*Close & Submit Buttons */}
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+
+                        <AlertDialogAction
+                            disabled={reason === ''}
+                            className="text-white bg-red-600 hover:bg-red-600"
+                        >
+                            Submit
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
