@@ -121,25 +121,22 @@ export function ProfileClient({ session: initialSession, lostItems, foundItems }
         }
     }
     const codes = [
-        { value: "+91" },  // India
-        { value: "+971" }, // UAE
-        { value: "+966" }, // Saudi Arabia
-        { value: "+974" }, // Qatar
-        { value: "+965" }, // Kuwait
-        { value: "+968" }, // Oman
-        { value: "+973" }, // Bahrain
-        { value: "+1" },   // USA / Canada
-        { value: "+44" },  // United Kingdom
-        { value: "+61" },  // Australia
-        { value: "+64" },  // New Zealand
-        { value: "+353" }, // Ireland
-        { value: "+49" },  // Germany
+        { value: "+91", label:"IN" },
+        { value: "+971", label:"UAE" }, 
+        { value: "+966", label:"SA" },
+        { value: "+974", label:"QA" }, 
+        { value: "+965", label:"KW" }, 
+        { value: "+968", label:"OM" }, 
+        { value: "+973", label:"BH" }, 
+        { value: "+1", label:"US/CA" },  
+        { value: "+44", label:"UK" }, 
+        { value: "+61", label:"AU" },  
+        { value: "+64", label:"NZ" },
+        { value: "+353", label:"IE" },
+        { value: "+49", label:"DE" }, 
     ] 
     const [country_code, setCountrycode] = useState("+91")
     return (
-
-        
-
         <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-4rem)]">
             <div className="flex flex-col md:flex-row gap-8">
                 {/* User Sidebar */}
@@ -209,14 +206,15 @@ export function ProfileClient({ session: initialSession, lostItems, foundItems }
                                             </Button>
                                             </DropdownMenuTrigger>
                                             
-                                            <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width] min-w-[200px]">
+                                            <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width] min-w-[200px] ">
                                             {codes.map((item) => (
                                                 <DropdownMenuItem
                                                 key={item.value}
                                                 onSelect={() => setCountrycode(item.value)}
-                                                className="cursor-pointer"
+                                                className="cursor-pointer flex justify-between "
                                                 >
-                                                {item.value}
+                                                <div>{item.value}</div>
+                                                <div>{item.label}</div>
                                                 </DropdownMenuItem>
                                             ))}
                                             </DropdownMenuContent>
