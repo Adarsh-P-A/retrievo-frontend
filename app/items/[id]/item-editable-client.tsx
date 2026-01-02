@@ -9,7 +9,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { MoreHorizontal, Trash2, Calendar, MapPin, Flag, Share2, User, Pencil, X } from "lucide-react";
+import { MoreHorizontal, Trash2, Calendar, MapPin, Share2, User, Pencil, X, Flag, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -48,22 +48,31 @@ interface ItemEditableProps {
 
 export default function ItemEditable({ item, reporter, claim_status, session }: ItemEditableProps) {
     const router = useRouter();
+
     const {
+        reason,
+        setReason,
+        reasons_map,
+
         isEditing,
         setIsEditing,
         isDeleting,
         setIsDeleting,
         isSaving,
+        isReporting,
+        setIsReporting,
         isClaiming,
         setIsClaiming,
         claimText,
         setClaimText,
         isSubmittingClaim,
         myClaimStatus,
+
         formData,
         setFormData,
         canEdit,
         canClaim,
+
         handleSave,
         handleCancel,
         handleDelete,
@@ -81,6 +90,8 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
                 return "Claim Rejected";
         }
     }
+
+
 
     return (
         <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-4rem)]">
@@ -398,6 +409,17 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
                                 variant="ghost"
                                 size="sm"
                                 className="w-full text-muted-foreground hover:text-destructive py-3"
+                                onClick={() => {
+                                    const isAuthenticated =
+                                        !!session?.user && Date.now() < (session?.tokenExpires ?? 0);
+
+                                    if (!isAuthenticated) {
+                                        router.push(`/auth/signin?callbackUrl=/items/${item.id}`)
+                                        return
+                                    }
+
+                                    setIsReporting(true);
+                                }}
                             >
                                 <Flag className="w-4 h-4 mr-2" />
                                 Report
@@ -478,6 +500,57 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
                             onClick={handleClaimSubmit}
                         >
                             Submit claim
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog open={isReporting} onOpenChange={setIsReporting}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Report</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Please select a reason for reporting.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                variant="outline"
+                                role="combobox"
+                                className="w-full justify-between font-normal text-left"
+                            >
+                                {/* Show selected label or placeholder text */}
+                                <span className={!reason ? "text-muted-foreground" : ""}>
+                                    {reasons_map.find(r => r.value === reason)?.label || "Select a reason..."}
+                                </span>
+                                <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width] min-w-[200px]">
+                            {reasons_map.map((item) => (
+                                <DropdownMenuItem
+                                    key={item.value}
+                                    onSelect={() => setReason(item.value)}
+                                    className="cursor-pointer"
+                                >
+                                    {item.label}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    {/*Close & Submit Buttons */}
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+
+                        <AlertDialogAction
+                            disabled={reason === ''}
+                            className="text-white bg-red-600 hover:bg-red-600"
+                        >
+                            Submit
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

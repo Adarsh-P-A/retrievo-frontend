@@ -17,9 +17,20 @@ interface UseItemEditableProps {
 export function useItemEditable({ item, reporter, claim_status, session }: UseItemEditableProps) {
     const router = useRouter();
 
+    const reasons_map = [
+        { value: "spam", label: "It is spam" },
+        { value: "harassment", label: "Harassment or bullying" },
+        { value: "inappropriate", label: "Inappropriate content" },
+        { value: "fake", label: "Fake information" },
+        { value: "other", label: "Other" },
+    ]
+
+    const [reason, setReason] = useState("");
+
     const [isEditing, setIsEditing] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [isReporting, setIsReporting] = useState(false);
 
     const [isClaiming, setIsClaiming] = useState(false);
     const [claimText, setClaimText] = useState("");
@@ -170,21 +181,29 @@ export function useItemEditable({ item, reporter, claim_status, session }: UseIt
     }
 
     return {
+        reason,
+        setReason,
+        reasons_map,
+
         isEditing,
         setIsEditing,
         isDeleting,
         setIsDeleting,
         isSaving,
+        isReporting,
+        setIsReporting,
         isClaiming,
         setIsClaiming,
         claimText,
         setClaimText,
         isSubmittingClaim,
         myClaimStatus,
+
         formData,
         setFormData,
         canEdit,
         canClaim,
+
         handleSave,
         handleCancel,
         handleDelete,
