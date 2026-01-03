@@ -41,9 +41,9 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative flex-1 flex flex-col items-center justify-center py-24 px-4 text-center overflow-hidden">
         <div className="max-w-4xl space-y-8 relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-          <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary/10 text-primary hover:bg-primary/20 mb-4">
-            New: Community Program
-          </div>
+          {/* <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary/10 text-primary hover:bg-primary/20 mb-4">
+            New: Community Rewards Program
+          </div> */}
 
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-foreground">
             Lost something? <br />

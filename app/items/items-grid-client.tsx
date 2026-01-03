@@ -87,7 +87,7 @@ export function ItemsGridClient({ lostItems, foundItems }: ItemsBrowseProps) {
 
                 <TabsContent value="all" className="space-y-6 animate-in fade-in-50 duration-500">
                     {userItems.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                             {userItems.map((item) => (
                                 <div key={item.id} className="relative group">
                                     <ItemCard item={item} type={item.type} />
@@ -112,7 +112,7 @@ export function ItemsGridClient({ lostItems, foundItems }: ItemsBrowseProps) {
 
                 <TabsContent value="found" className="space-y-4 animate-in fade-in-50 duration-500">
                     {filteredFoundItems.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                             {filteredFoundItems.map(item => (
                                 <ItemCard key={item.id} item={item} type="found" />
                             ))}
@@ -135,7 +135,7 @@ export function ItemsGridClient({ lostItems, foundItems }: ItemsBrowseProps) {
 
                 <TabsContent value="lost" className="space-y-4 animate-in fade-in-50 duration-500">
                     {filteredLostItems.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                             {filteredLostItems.map(item => (
                                 <ItemCard key={item.id} item={item} type="lost" />
                             ))}

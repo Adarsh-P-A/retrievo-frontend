@@ -267,7 +267,7 @@ export function ProfileClient({ session: initialSession, lostItems, foundItems }
 
                         <TabsContent value="all" className="space-y-6 animate-in fade-in-50 duration-500">
                             {userItems.length > 0 ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {userItems.map((item) => (
                                         <div key={item.id} className="relative group">
                                             <ItemCard item={item} type={item.type} />
@@ -283,7 +283,7 @@ export function ProfileClient({ session: initialSession, lostItems, foundItems }
 
                         <TabsContent value="lost" className="space-y-6 animate-in fade-in-50 duration-500">
                             {lostItems.length > 0 ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {lostItems.map((item) => (
                                         <ItemCard key={item.id} item={item} type="lost" />
                                     ))}
@@ -297,7 +297,7 @@ export function ProfileClient({ session: initialSession, lostItems, foundItems }
 
                         <TabsContent value="found" className="space-y-6 animate-in fade-in-50 duration-500">
                             {foundItems.length > 0 ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {foundItems.map((item) => (
                                         <ItemCard key={item.id} item={item} type="found" />
                                     ))}
