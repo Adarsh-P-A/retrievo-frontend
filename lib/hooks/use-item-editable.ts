@@ -188,13 +188,16 @@ export function useItemEditable({ item, reporter, claim_status, session }: UseIt
 
             if (res.ok) {
                 toast.success("Item reported successfully");
-                setIsReporting(false);
             } else {
-                toast.error("Failed to report item");
-                setIsReporting(false);
+                if (res.status === 409) {
+                    toast.error("You have already reported this item");
+                } else {
+                    toast.error("Failed to report item");
+                }
             }
         } finally {
             setIsReporting(false);
+            setReason("");
         }
     }
 

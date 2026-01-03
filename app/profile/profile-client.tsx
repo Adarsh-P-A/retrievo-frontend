@@ -35,6 +35,7 @@ export function ProfileClient({ session: initialSession, lostItems, foundItems }
     const [isSavingPhone, isSettingPhone] = useState(false);
 
     const [phone, setPhone] = useState("");
+    const [country_code, setCountrycode] = useState("+91")
 
     const toastShownRef = useRef(false); // To prevent multiple toasts
 
@@ -135,7 +136,7 @@ export function ProfileClient({ session: initialSession, lostItems, foundItems }
         { value: "+353", label: "IE" },
         { value: "+49", label: "DE" },
     ]
-    const [country_code, setCountrycode] = useState("+91")
+
     return (
         <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-4rem)]">
             <div className="flex flex-col md:flex-row gap-8">
