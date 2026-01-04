@@ -229,20 +229,8 @@ export async function getClaimForReview(itemID: string) {
 
 // GET: Fetch resolution status by ID (for claimants)
 export async function getResolutionStatus(resolutionId: string) {
-    const session = await auth();
-
-    if (!session?.backendToken) {
-        throw new UnauthorizedError();
-    }
-
     try {
-        const res = await fetch(`/resolutions/status/${resolutionId}`, {
-            headers: {
-                Authorization: `Bearer ${session.backendToken}`,
-            },
-        });
-
-        if (res.status === 401) throw new UnauthorizedError();
+        const res = await authFetch(`/resolutions/status/${resolutionId}`);
 
         if (!res.ok) {
             return { ok: false, data: null, status: res.status };
