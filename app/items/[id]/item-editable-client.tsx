@@ -549,7 +549,11 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
 
                     {/*Close & Submit Buttons */}
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel
+                            onClick={() => setReason("")}
+                        >
+                            Cancel
+                        </AlertDialogCancel>
 
                         <AlertDialogAction
                             disabled={reason === ''}

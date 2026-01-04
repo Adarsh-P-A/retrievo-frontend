@@ -3,12 +3,10 @@
 import { auth } from "@/auth";
 import { authFetch, safeJson, UnauthorizedError } from "./helpers";
 
-const BACKEND_URL = process.env.INTERNAL_BACKEND_URL;
-
 // POST: Lost or Found Item
 export async function postLostFoundItem(formData: FormData) {
     try {
-        const res = await authFetch(`${BACKEND_URL}/items/create`, {
+        const res = await authFetch('/items/create', {
             method: "POST",
             body: formData,
         });
@@ -30,7 +28,7 @@ export async function postLostFoundItem(formData: FormData) {
 // PATCH: Update single item fields
 export async function updateItem(itemId: string, data: Record<string, any>) {
     try {
-        const res = await authFetch(`${BACKEND_URL}/items/${itemId}`, {
+        const res = await authFetch('/items/${itemId}', {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
@@ -53,7 +51,7 @@ export async function updateItem(itemId: string, data: Record<string, any>) {
 // DELETE: Delete an item
 export async function deleteItem(itemId: string) {
     try {
-        const res = await authFetch(`${BACKEND_URL}/items/${itemId}`, {
+        const res = await authFetch(`/items/${itemId}`, {
             method: "DELETE",
         });
 
@@ -74,7 +72,7 @@ export async function deleteItem(itemId: string) {
 // POST: Set User Hostel
 export async function setHostel(hostel: string) {
     try {
-        const res = await authFetch(`${BACKEND_URL}/profile/set-hostel`, {
+        const res = await authFetch('/profile/set-hostel', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ hostel }),
@@ -95,7 +93,7 @@ export async function setHostel(hostel: string) {
 // POST: Set User Phone Number
 export async function setPhoneNumber(phone: string) {
     try {
-        const res = await authFetch(`${BACKEND_URL}/profile/set-phone`, {
+        const res = await authFetch('/profile/set-phone', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ phone }),
@@ -116,7 +114,7 @@ export async function setPhoneNumber(phone: string) {
 // POST: Create a resolution (claim) for a found item
 export async function createResolution(itemId: string, description: string) {
     try {
-        const res = await authFetch(`${BACKEND_URL}/resolutions/create`, {
+        const res = await authFetch('/resolutions/create', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ found_item_id: itemId, claim_description: description }),
@@ -136,7 +134,7 @@ export async function createResolution(itemId: string, description: string) {
 
 export async function getNotificationsCount() {
     try {
-        const res = await authFetch(`${BACKEND_URL}/notifications/count`);
+        const res = await authFetch('/notifications/count');
 
         if (!res.ok) {
             console.error("getNotificationsCount failed:", res.status);
@@ -156,7 +154,7 @@ export async function getNotificationsCount() {
 
 export async function getNotifications() {
     try {
-        const res = await authFetch(`${BACKEND_URL}/notifications/all`);
+        const res = await authFetch('/notifications/all');
 
         if (!res.ok) {
             console.error("getNotifications failed:", res.status);
@@ -176,7 +174,7 @@ export async function getNotifications() {
 
 export async function readNotification(notificationId: string) {
     try {
-        const res = await authFetch(`${BACKEND_URL}/notifications/${notificationId}/mark-read`, {
+        const res = await authFetch(`/notifications/${notificationId}/mark-read`, {
             method: "POST",
         });
 
@@ -194,7 +192,7 @@ export async function readNotification(notificationId: string) {
 
 export async function readAllNotifications() {
     try {
-        const res = await authFetch(`${BACKEND_URL}/notifications/mark-all-read`, {
+        const res = await authFetch(`/notifications/mark-all-read`, {
             method: "POST",
         });
 
@@ -213,7 +211,7 @@ export async function readAllNotifications() {
 // GET: Fetch latest claim for specific item
 export async function getClaimForReview(itemID: string) {
     try {
-        const res = await authFetch(`${BACKEND_URL}/resolutions/review/${itemID}`);
+        const res = await authFetch(`/resolutions/review/${itemID}`);
 
         if (!res.ok) {
             console.error("getClaimForReview failed:", res.status);
@@ -238,7 +236,7 @@ export async function getResolutionStatus(resolutionId: string) {
     }
 
     try {
-        const res = await fetch(`${BACKEND_URL}/resolutions/status/${resolutionId}`, {
+        const res = await fetch(`/resolutions/status/${resolutionId}`, {
             headers: {
                 Authorization: `Bearer ${session.backendToken}`,
             },
@@ -262,7 +260,7 @@ export async function getResolutionStatus(resolutionId: string) {
 // POST: Approve a claim
 export async function approveClaim(claimId: string) {
     try {
-        const res = await authFetch(`${BACKEND_URL}/resolutions/${claimId}/approve`, {
+        const res = await authFetch(`/resolutions/${claimId}/approve`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
         });
@@ -284,7 +282,7 @@ export async function approveClaim(claimId: string) {
 // POST: Reject a claim
 export async function rejectClaim(resolutionID: string, rejectionReason: string) {
     try {
-        const res = await authFetch(`${BACKEND_URL}/resolutions/${resolutionID}/reject`, {
+        const res = await authFetch(`/resolutions/${resolutionID}/reject`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ rejection_reason: rejectionReason }),
@@ -306,7 +304,7 @@ export async function rejectClaim(resolutionID: string, rejectionReason: string)
 
 export async function reportItem(itemId: string, reason: string) {
     try {
-        const res = await authFetch(`${BACKEND_URL}/items/${itemId}/report`, {
+        const res = await authFetch(`/items/${itemId}/report`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ reason }),

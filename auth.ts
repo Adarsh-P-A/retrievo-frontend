@@ -100,6 +100,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                             image: userData.image,
                             hostel: userData.hostel || null,
                             phone: userData.phone || null,
+                            role: userData.role
                         };
                     }
                 } catch (err) {
@@ -129,6 +130,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                                 image: userData.image,
                                 hostel: userData.hostel || null,
                                 phone: userData.phone || null,
+                                role: userData.role
                             };
                         } else {
                             console.error("Failed to fetch user data, status:", res.status);
@@ -196,6 +198,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     image: string;
                     hostel: "boys" | "girls" | null;
                     phone: string | null;
+                    role: "user" | "admin";
                 };
 
                 session.user = {
@@ -205,7 +208,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     email: userData.email,
                     image: userData.image,
                     hostel: userData.hostel,
-                    phone: userData.phone
+                    phone: userData.phone,
+                    role: userData.role
                 };
 
                 return session;

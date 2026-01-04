@@ -17,17 +17,14 @@ export async function safeJson(res: Response) {
     }
 }
 
-export async function authFetch(
-    input: RequestInfo,
-    init: RequestInit = {}
-) {
+export async function authFetch(input: RequestInfo, init: RequestInit = {}) {
     const session = await auth();
 
     if (!session?.backendToken) {
         throw new UnauthorizedError();
     }
 
-    const res = await fetch(input, {
+    const res = await fetch(`${process.env.INTERNAL_BACKEND_URL}${input}`, {
         ...init,
         headers: {
             ...(init.headers || {}),
