@@ -1,6 +1,6 @@
 import { ItemsLoadingSkeleton } from './items-loading-skeleton';
-import { ItemsDataLoader } from './items-data-loader';
 import { Suspense } from 'react';
+import { ItemsGridClient } from './items-grid-client';
 
 
 export default function BrowseItemsPage() {
@@ -18,8 +18,8 @@ export default function BrowseItemsPage() {
             </div>
 
             <Suspense fallback={<ItemsLoadingSkeleton />}>
-                <ItemsDataLoader />
+                <ItemsGridClient />
             </Suspense>
-        </div>
+        </div >
     );
 }

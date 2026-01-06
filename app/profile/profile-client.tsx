@@ -8,10 +8,9 @@ import { ItemCard } from '@/components/item-card';
 import { LogOut, ChevronDown } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import type { Session } from 'next-auth';
-import { Item } from '@/types/item';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { setHostel, setPhoneNumber } from '@/lib/api/client';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
@@ -21,14 +20,17 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import useSWR from 'swr';
+import { fetchData } from '@/lib/utils/swrHelper';
+import { formatDate } from '@/lib/date-formatting';
+import { Item } from '@/types/item';
+import { getUserItems } from '@/lib/api/items';
 
 interface ProfileClientProps {
     session: Session;
-    lostItems: Item[];
-    foundItems: Item[];
 }
 
-export function ProfileClient({ session: initialSession, lostItems, foundItems }: ProfileClientProps) {
+export function ProfileClient({ session: initialSession }: ProfileClientProps) {
     const { data: session, update } = useSession();
 
     const [isSavingHostel, isSettingHostel] = useState(false);
@@ -41,6 +43,19 @@ export function ProfileClient({ session: initialSession, lostItems, foundItems }
 
     const params = useSearchParams();
     const reason = params.get("reason");
+
+    // Fetch user items with SWR
+    const { data: itemsData, isLoading } = useSWR('userItems', () => fetchData(() => getUserItems()));
+
+    const lostItems: Item[] = useMemo(() => {
+        if (!itemsData) return [];
+        return itemsData.lost_items.map(formatDate);
+    }, [itemsData]);
+
+    const foundItems: Item[] = useMemo(() => {
+        if (!itemsData) return [];
+        return itemsData.found_items.map(formatDate);
+    }, [itemsData]);
 
     useEffect(() => {
         if (reason === "hostel_required" && !toastShownRef.current) {

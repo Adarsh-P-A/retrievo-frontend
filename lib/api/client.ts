@@ -1,6 +1,5 @@
 "use server";
 
-import { auth } from "@/auth";
 import { authFetch, safeJson, UnauthorizedError } from "./helpers";
 
 // POST: Lost or Found Item

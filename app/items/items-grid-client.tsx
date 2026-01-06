@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -8,15 +8,27 @@ import { ItemCard } from '@/components/item-card';
 import { Search, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Item } from '@/types/item';
+import useSWR from 'swr';
+import { getAllItems } from '@/lib/api/items';
+import { fetchData } from '@/lib/utils/swrHelper';
+import { formatDate } from '@/lib/date-formatting';
+import { ItemsLoadingSkeleton } from './items-loading-skeleton';
 
-interface ItemsBrowseProps {
-    lostItems: Item[];
-    foundItems: Item[];
-}
-
-export function ItemsGridClient({ lostItems, foundItems }: ItemsBrowseProps) {
+export function ItemsGridClient() {
     const [searchQuery, setSearchQuery] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('all');
+
+    const { data: items, isLoading } = useSWR('allItems', () => fetchData(() => getAllItems()));
+
+    const lostItems = useMemo(() => {
+        if (!items) return [];
+        return items.filter((i: Item) => i.type === "lost").map(formatDate);
+    }, [items]);
+
+    const foundItems = useMemo(() => {
+        if (!items) return [];
+        return items.filter((i: Item) => i.type === "found").map(formatDate);
+    }, [items]);
 
     const filterItems = (items: any[]) => {
         return items.filter(item => {
@@ -34,6 +46,10 @@ export function ItemsGridClient({ lostItems, foundItems }: ItemsBrowseProps) {
 
     const filteredLostItems = filterItems(lostItems);
     const filteredFoundItems = filterItems(foundItems);
+
+    if (isLoading) {
+        return <ItemsLoadingSkeleton />;
+    }
 
     let userItems = [...filteredFoundItems, ...filteredLostItems];
     userItems.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Sort by lost/found date in descending order
