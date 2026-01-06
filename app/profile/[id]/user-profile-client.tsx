@@ -8,7 +8,7 @@ import { formatDate } from '@/lib/date-formatting';
 import { Item } from '@/types/item';
 import { User } from '@/types/user';
 import useSWR from 'swr';
-import { getUserProfile } from '@/lib/api/items';
+import { getUserProfile } from '@/lib/api/swr-items';
 import { fetchData } from '@/lib/utils/swrHelper';
 import { useMemo } from 'react';
 import { UserProfileLoading } from '../user-profile-loading';

@@ -24,7 +24,7 @@ import useSWR from 'swr';
 import { fetchData } from '@/lib/utils/swrHelper';
 import { formatDate } from '@/lib/date-formatting';
 import { Item } from '@/types/item';
-import { getUserItems } from '@/lib/api/items';
+import { getUserItems } from '@/lib/api/swr-items';
 
 interface ProfileClientProps {
     session: Session;

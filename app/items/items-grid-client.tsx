@@ -9,7 +9,7 @@ import { Search, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Item } from '@/types/item';
 import useSWR from 'swr';
-import { getAllItems } from '@/lib/api/items';
+import { getAllItems } from '@/lib/api/swr-items';
 import { fetchData } from '@/lib/utils/swrHelper';
 import { formatDate } from '@/lib/date-formatting';
 import { ItemsLoadingSkeleton } from './items-loading-skeleton';

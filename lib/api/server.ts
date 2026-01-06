@@ -23,23 +23,3 @@ export async function fetchItem(itemId: string, token?: string) {
         return { ok: false, data: null, error: String(err) };
     }
 }
-
-export async function getNotificationsCount(token?: string) {
-    try {
-        const res = await fetch(`${BACKEND_URL}/notifications/count`, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!res.ok) {
-            console.error("getNotificationsCount failed:", res.status);
-            return {
-                ok: false, data: { count: 0 }, status: res.status
-            };
-        }
-
-        return { ok: true, data: await safeJson(res) };
-    } catch (err) {
-        console.error("getNotificationsCount error:", err);
-        return { ok: false, data: { count: 0 }, error: String(err) };
-    }
-}
