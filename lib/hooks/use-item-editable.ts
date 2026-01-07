@@ -47,7 +47,11 @@ export function useItemEditable({ item, reporter, claim_status, session }: UseIt
         date: item.date ? new Date(item.date).toISOString().slice(0, 10) : "",
     });
 
-    const canEdit = !!session && reporter.public_id === session.user?.public_id;
+    // Determine permissions
+    const canEdit = !!session &&
+        reporter.public_id === session.user?.public_id &&
+        !["approved", "pending"].includes(claim_status); // Can't edit if claim is approved or pending
+
     const canClaim = item.type === "found" && myClaimStatus === "none" && !canEdit;
 
     async function handleSave() {
@@ -101,8 +105,6 @@ export function useItemEditable({ item, reporter, claim_status, session }: UseIt
         if (res.ok) {
             toast.success("Item updated successfully.");
             setIsEditing(false);
-        } else if (res.status === 400) {
-            toast.error("This item cannot be updated because a claim is in progress or has been approved.");
         } else {
             toast.error("Unable to update the item. Please try again later.");
         }
@@ -202,7 +204,7 @@ export function useItemEditable({ item, reporter, claim_status, session }: UseIt
                 if (res.status === 409) {
                     toast.error("You have already reported this item");
                 } else if (res.status === 400) {
-                    toast.error("Cannot self-report reason");
+                    toast.error("Cannot self-report your own item post");
                 } else {
                     toast.error("Failed to report item");
                 }

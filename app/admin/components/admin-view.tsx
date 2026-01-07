@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { OverviewTab } from "./overview-tab";
 import { ClaimsTab } from "./claims-tab";
 import { UsersTab } from "./users-tab";
-import { ItemsTab } from "./items-tab";
-import { ActivityTab } from "./activity-tab";
+import { ReportsTab } from "./reports-tab";
 
 export function AdminView({ initialTab }: { initialTab: string }) {
     const [activeTab, setActiveTab] = useState(initialTab);
@@ -27,19 +26,17 @@ export function AdminView({ initialTab }: { initialTab: string }) {
     return (
         <div className="space-y-8">
             <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-8">
-                <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
+                <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
                     <TabsTrigger value="overview">Overview</TabsTrigger>
                     <TabsTrigger value="claims">Claims</TabsTrigger>
                     <TabsTrigger value="users">Users</TabsTrigger>
-                    <TabsTrigger value="items">Items</TabsTrigger>
-                    <TabsTrigger value="activity">Activity</TabsTrigger>
+                    <TabsTrigger value="reports">Reports</TabsTrigger>
                 </TabsList>
 
                 {activeTab === "overview" && <OverviewTab />}
                 {activeTab === "claims" && <ClaimsTab />}
                 {activeTab === "users" && <UsersTab />}
-                {activeTab === "items" && <ItemsTab />}
-                {activeTab === "activity" && <ActivityTab />}
+                {activeTab === "reports" && <ReportsTab />}
             </Tabs>
         </div>
     );

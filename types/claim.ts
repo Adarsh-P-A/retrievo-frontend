@@ -1,5 +1,4 @@
 import { Item } from "./item";
-import { User } from "./user";
 
 export type ClaimStatus = 'pending' | 'approved' | 'rejected';
 

@@ -23,7 +23,6 @@ export interface ActivityItem {
     type: "claim_approved" | "claim_rejected" | "claim_pending" | "report_filed" | "item_auto_hidden";
     description: string;
     timestamp: string;
-    metadata: Record<string, any>;
 }
 
 export interface ClaimDetail {

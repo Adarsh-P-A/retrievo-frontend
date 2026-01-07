@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
     Table,
     TableBody,
@@ -37,7 +36,6 @@ function getInitials(name: string) {
 }
 
 export function UsersTable({ users, onUpdate }: { users: UserDetail[], onUpdate: () => void }) {
-    const router = useRouter();
     const [actionDialog, setActionDialog] = useState<{
         open: boolean;
         action: () => Promise<void>;

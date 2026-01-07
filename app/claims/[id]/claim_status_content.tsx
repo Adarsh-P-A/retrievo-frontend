@@ -5,7 +5,6 @@ import { Item } from "@/types/item";
 import { Card } from "@/components/ui/card";
 import { CheckCircle2, X, Clock, Mail, Phone } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ClaimStatusContentProps {
     claim: Claim;
