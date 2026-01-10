@@ -5,8 +5,8 @@ import { redirect } from 'next/navigation';
 export default async function ReportPage({ searchParams }: { searchParams: Promise<{ type?: string }> }) {
     const { type } = await searchParams;
 
-    if (type !== "lost" && type !== "found") {
-        return;
+    if (!type || (type !== 'lost' && type !== 'found')) {
+        redirect('/report?type=lost');
     }
 
     const session = await auth();
