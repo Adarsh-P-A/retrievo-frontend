@@ -58,9 +58,7 @@ export interface UserDetail {
 export interface ReportedItemDetail {
     item_id: string;
     item_title: string;
-    item_type: "lost" | "found";
-    item_owner_name: string;
-    item_owner_id: string;
+    owner_name: string;
     report_count: number;
     is_hidden: boolean;
     hidden_reason: string | null;

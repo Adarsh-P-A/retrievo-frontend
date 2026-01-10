@@ -136,12 +136,12 @@ export async function getReportedItems(limit = 50, skip = 0) {
     }
 }
 
-export async function moderateItem(itemId: string, request: ModerateItemRequest) {
+export async function moderateItem(itemId: string, action: ModerateItemRequest) {
     try {
         const res = await authFetch(`/admin/items/${itemId}/moderate`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(request),
+            body: JSON.stringify(action),
         });
 
         if (!res.ok) {

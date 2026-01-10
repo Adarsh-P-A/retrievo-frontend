@@ -153,7 +153,10 @@ export async function getNotificationsCount() {
 
 export async function getNotifications() {
     try {
-        const res = await authFetch('/notifications/all');
+        const res = await authFetch(
+            '/notifications/all',
+            { next: { revalidate: 120 } } // Cache for 2 minutes
+        );
 
         if (!res.ok) {
             console.error("getNotifications failed:", res.status);

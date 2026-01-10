@@ -562,7 +562,7 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
 
                         <AlertDialogAction
                             disabled={reason === ''}
-                            className="text-white bg-red-600 hover:bg-red-600"
+                            className="shadow-sm"
                             onClick={handleReport}
                         >
                             Submit
