@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from 'react';
+import { Combobox } from '@/components/ui/combo-box';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -36,6 +37,7 @@ import { signIn } from "next-auth/react";
 import type { Session } from 'next-auth';
 import { ImageViewer } from '@/components/image-viewer';
 import { toast } from 'sonner';
+
 
 
 const formSchema = z.object({
@@ -80,6 +82,7 @@ interface ItemFormClientProps {
 }
 
 export function ItemFormClient({ session, type }: ItemFormClientProps) {
+    const [selected, setSelected] = useState("")
     const [preview, setPreview] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
@@ -95,6 +98,103 @@ export function ItemFormClient({ session, type }: ItemFormClientProps) {
             item_type: type,
         },
     });
+
+    const groupedLocations = [
+        {
+            category: "Central Campus",
+            items: [
+            { value: "admin_block", label: "Admin Block" },
+            { value: "swadishtam", label: "Swadishtam Canteen" },
+            { value: "coops", label: "Cooperative Store" },
+            { value: "creative_zone", label: "Creative Zone" },
+            { value: "main_ground", label: "Main Ground" },
+            { value: "main_building", label: "Main Building" },
+            { value: "ccc", label: "CCC" },
+            { value: "nlhc", label: "NLHC" },
+            { value: "oat", label: "OAT" },
+            { value: "elhc", label: "ELHC" },
+            { value: "rajpath", label: "Rajpath" },
+            { value: "bb_court", label: "BasketBall court" },
+            { value: "aryabhatta", label: "Aryabhatta hall" },
+            { value: "bhaskara", label: "Bhaskara hall" },
+            { value: "chanakya", label: "Chanakya hall" },
+            { value: "hostel_office", label:"Hostel Office" },
+            { value: "amphitheatre", label: "Amphitheatre" },
+            { value: "audi", label: "Badminton auditorium" },
+            { value: "mini_canteen", label: "Mini Canteen" },
+            { value: "97th_avenue", label:"97th Avenue" },
+            { value: "architecture", label: "Architecture Building" }
+            ]
+        },
+        {
+            category: "Labs",
+            items: [
+                { value:"NSL", label:"NSL"},
+                { value:"SSL", label:"SSL"},
+                { value:"mech_lab", label:"Mechanical Lab"},
+                { value:"civil_lab", label:"Civil Lab"},
+                { value:"production_lab", label:"Production Lab"},
+                { value:"unwired", label:"Unwired workshop"},
+                { value:"rig", label:"RIG lab"},
+            ]
+        },
+        {
+            category: "Department buildings",
+            items: [
+                { value:"csed", label:"CSED building"},
+                { value:"eced", label:"ECED building"},
+                { value:"eeed", label:"EEED building"},
+                { value:"med", label:"MED building"},
+                { value:"ched", label:"CHED building"},
+                { value:"maths", label:"Mathematics building"},
+                { value:"physics", label:"Physics building"},
+                { value:"material", label:"Material building"},
+            ]
+        },
+        {
+            category: "Hostels",
+            items: [
+            { value:"a_hostel", label:"A hostel"},
+            { value:"b_hostel", label:"B hostel"},
+            { value:"c_hostel", label:"C hostel"},
+            { value:"d_hostel", label:"D hostel"},
+            { value:"e_hostel", label:"E hostel"},
+            { value:"f_hostel", label:"F hostel"},
+            { value:"g_hostel", label:"G hostel"},
+            { value: "pg1", label: "PG hostel 1" },
+            { value: "pg2", label: "PG hostel 2" },
+            { value:"lh", label:"LH"},
+            { value:"mlh", label:"MLH"},
+            { value:"mbh1", label:"MBH 1"},
+            { value:"mbh2", label:"MBH 2"},
+            ]
+        },
+        {
+            category: "East Campus",
+            items: [
+            { value: "eclhc", label: "ECLHC" },
+            { value: "sumedhyam", label: "Sumedhyam Canteen" },
+            ]
+        },
+        {
+            category: "West Campus",
+            items: [
+            { value:"library", label:"Central Library"},
+            { value:"guest_house", label:"Guest House"},
+            { value: "tbi", label: "TBI" },
+            { value: "swimming_pool", label: "Swimming Pool" },
+            { value: "bbc", label: "Bestie Beans Cafe" },
+            { value: "faculty_residency", label: "Faculty Residential Area" },
+            ]
+        },
+        {
+            category: "South Campus",
+            items: [
+            { value: "soms", label: "SOMS" },
+            { value: "mba_auditorium", label: "MBA Auditorium" },
+            ]
+        },
+        ];
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
@@ -306,7 +406,12 @@ export function ItemFormClient({ session, type }: ItemFormClientProps) {
                                     <FormItem>
                                         <FormLabel>Location</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="e.g. Center Circle" {...field} className="h-11" />
+                                            <Combobox 
+                                                groups={groupedLocations} 
+                                                value={selected} 
+                                                onChange={setSelected} 
+                                                placeholder="Select a location"
+                                                />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
