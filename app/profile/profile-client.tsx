@@ -165,7 +165,7 @@ export function ProfileClient({ session: initialSession }: ProfileClientProps) {
                                     alt=""
                                     aria-hidden="true"
                                     className="
-                                    absolute inset-0 h-full w-full object-cover blur-3xl scale-125 opacity-50 saturate-150"
+                                    absolute inset-0 h-full w-full object-cover blur-3xl scale-125 opacity-50 saturate-300"
                                 />
                             </div>
                             <CardHeader className="text-center -mt-12 relative z-10">
