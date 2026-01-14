@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { getClaimForReview } from "@/lib/api/client";
 import { redirect } from "next/navigation";
 import { FinderReviewContent } from "./finder_review_content";
+import Link from "next/link";
 
 export default async function FinderReviewPage({ params }: { params: Promise<{ id: string }>; }) {
     const session = await auth();
@@ -30,12 +31,12 @@ export default async function FinderReviewPage({ params }: { params: Promise<{ i
                     <p className="text-muted-foreground mb-6">
                         There are no pending claims for this item, or you already reviewed and resolved it.
                     </p>
-                    <a
+                    <Link
                         href="/items"
                         className="inline-block px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90"
                     >
                         Back to Items
-                    </a>
+                    </Link>
                 </div>
             </div>
         );
@@ -66,12 +67,12 @@ export default async function FinderReviewPage({ params }: { params: Promise<{ i
                             </span>
                         )}
                     </p>
-                    <a
+                    <Link
                         href="/items"
                         className="inline-block px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90"
                     >
                         Back to Items
-                    </a>
+                    </Link>
                 </div>
             </div>
         );

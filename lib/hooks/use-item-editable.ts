@@ -6,6 +6,7 @@ import { Session } from "next-auth";
 import { User as UserType } from "@/types/user";
 import { updateItem, createResolution, deleteItem, reportItem } from "@/lib/api/client";
 import { validateForm } from "@/lib/utils/validation";
+import { reasons_map } from "../constants/report-reasons";
 
 interface UseItemEditableProps {
     item: Item;
@@ -17,15 +18,7 @@ interface UseItemEditableProps {
 export function useItemEditable({ item, reporter, claim_status, session }: UseItemEditableProps) {
     const router = useRouter();
 
-    const reasons_map = [
-        { value: "spam", label: "Spam post" },
-        { value: "harassment", label: "Harassment or bullying" },
-        { value: "inappropriate", label: "Inappropriate content" },
-        { value: "fake", label: "Fake information" },
-        { value: "other", label: "Other" },
-    ]
-
-    const [reason, setReason] = useState("");
+    const [reason, setReason] = useState("fake");
 
     const [isEditing, setIsEditing] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);

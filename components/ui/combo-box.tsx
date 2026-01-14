@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/popover"
 
 // Pass the grouped data here
-export function Combobox({ groups =[], value, onChange }: any) {
+export function Combobox({ groups = [], value, onChange }: any) {
   const [open, setOpen] = React.useState(false)
 
   // Helper to find the label for the selected value (across all groups)
@@ -44,17 +44,17 @@ export function Combobox({ groups =[], value, onChange }: any) {
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      
-      <PopoverContent className="w-[200px] p-0">
+
+      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
         <Command>
           <CommandInput placeholder="Search location..." />
           <CommandList>
             <CommandEmpty>No location found.</CommandEmpty>
-            
+
             {/* --- LOOP THROUGH GROUPS --- */}
             {groups.map((group: any) => (
               <CommandGroup key={group.category} heading={group.category}>
-                
+
                 {/* --- LOOP THROUGH ITEMS INSIDE GROUP --- */}
                 {group.items.map((item: any) => (
                   <CommandItem
@@ -74,10 +74,10 @@ export function Combobox({ groups =[], value, onChange }: any) {
                     {item.label}
                   </CommandItem>
                 ))}
-                
+
               </CommandGroup>
             ))}
-            
+
           </CommandList>
         </Command>
       </PopoverContent>

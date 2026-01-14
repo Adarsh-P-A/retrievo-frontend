@@ -10,6 +10,7 @@ import { formatDistanceToNow } from "date-fns";
 import useSWR from "swr";
 import { ClaimsSkeleton } from "./skeletons";
 import { fetchData } from "@/lib/utils/swrHelper";
+import Link from "next/link";
 
 export function ClaimsTab() {
     const { data: claims, isLoading } = useSWR(['claims', undefined, 50, 0], () => fetchData(() => getClaims(undefined, 50, 0)));
@@ -88,7 +89,7 @@ export function ClaimsTab() {
                                                 variant="outline"
                                                 asChild
                                             >
-                                                <a href={`/claims/${claim.id}`}>View</a>
+                                                <Link href={`/claims/${claim.id}`}>View</Link>
                                             </Button>
                                         </div>
                                     </TableCell>

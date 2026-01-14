@@ -567,7 +567,7 @@ export default function ItemEditable({ item, reporter, claim_status, session }: 
                             </Button>
                         </DropdownMenuTrigger>
 
-                        <DropdownMenuContent className="w-full min-w-[200px]">
+                        <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width) min-w-[200px]">
                             {reasons_map.map((item) => (
                                 <DropdownMenuItem
                                     key={item.value}

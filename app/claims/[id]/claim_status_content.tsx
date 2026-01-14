@@ -5,6 +5,7 @@ import { Item } from "@/types/item";
 import { Card } from "@/components/ui/card";
 import { CheckCircle2, X, Clock, Mail, Phone } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import Link from "next/link";
 
 interface ClaimStatusContentProps {
     claim: Claim;
@@ -95,22 +96,22 @@ export function ClaimStatusContent({ claim, item, finderContact }: ClaimStatusCo
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2">
                                             <Mail className="h-4 w-4 text-green-600 dark:text-green-400" />
-                                            <a
+                                            <Link
                                                 href={`mailto:${finderContact.email}`}
                                                 className="text-sm text-green-900 dark:text-green-100 hover:underline"
                                             >
                                                 {finderContact.email}
-                                            </a>
+                                            </Link>
                                         </div>
 
                                         <div className="flex items-center gap-2">
                                             <Phone className="h-4 w-4 text-green-600 dark:text-green-400" />
-                                            <a
+                                            <Link
                                                 href={`tel:${finderContact.phone}`}
                                                 className="text-sm text-green-900 dark:text-green-100 hover:underline"
                                             >
                                                 {finderContact.phone}
-                                            </a>
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>
