@@ -37,7 +37,7 @@ import type { Session } from 'next-auth';
 import { ImageViewer } from '@/components/image-viewer';
 import { toast } from 'sonner';
 import { LOCATION_MAP } from '../../lib/constants/locations';
-
+import { compressImage } from '@/lib/utils/img-compressor';
 
 
 const formSchema = z.object({
@@ -381,7 +381,7 @@ export function ItemFormClient({ session, type }: ItemFormClientProps) {
                                                         type="file"
                                                         accept="image/*"
                                                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                                        onChange={(e) => {
+                                                        onChange={async (e) => {
                                                             const file = e.target.files?.[0] ?? null;
 
                                                             if (!file) {
@@ -390,16 +390,28 @@ export function ItemFormClient({ session, type }: ItemFormClientProps) {
                                                                 return;
                                                             }
 
-                                                            if (file.size > 5 * 1024 * 1024) {
-                                                                alert("Image is larger than 5MB.");
+                                                            if (file.size > 3 * 1024 * 1024) {
+                                                                alert("Image is larger than 3MB.");
                                                                 return;
                                                             }
 
-                                                            field.onChange(file);
+                                                            try {
+                                                                // Compress the image
+                                                                const compressedFile = await compressImage(file);
+                                                                
+                                                                field.onChange(compressedFile);
 
-                                                            const reader = new FileReader();
-                                                            reader.onloadend = () => setPreview(reader.result as string);
-                                                            reader.readAsDataURL(file);
+                                                                const reader = new FileReader();
+                                                                reader.onloadend = () => setPreview(reader.result as string);
+                                                                reader.readAsDataURL(compressedFile);
+                                                            } catch (error) {
+                                                                console.error('Image compression failed:', error);
+                                                                // Fallback to original file
+                                                                field.onChange(file);
+                                                                const reader = new FileReader();
+                                                                reader.onloadend = () => setPreview(reader.result as string);
+                                                                reader.readAsDataURL(file);
+                                                            }
                                                         }}
                                                     />
                                                 </>
