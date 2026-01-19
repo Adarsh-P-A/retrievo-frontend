@@ -4,8 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, CheckCircle, XCircle } from "lucide-react";
-import { getClaims } from "@/lib/api/admin";
+import { Clock, CheckCircle, XCircle, RotateCcw } from "lucide-react";
+import { getResolutions } from "@/lib/api/admin";
 import { formatDistanceToNow } from "date-fns";
 import useSWR from "swr";
 import { ClaimsSkeleton } from "./skeletons";
@@ -13,7 +13,7 @@ import { fetchData } from "@/lib/utils/swrHelper";
 import Link from "next/link";
 
 export function ClaimsTab() {
-    const { data: claims, isLoading } = useSWR(['claims', undefined, 50, 0], () => fetchData(() => getClaims(undefined, 50, 0)));
+    const { data: resolutions, isLoading } = useSWR(['claims', undefined, 50, 0], () => fetchData(() => getResolutions(undefined, 50, 0)));
 
     if (isLoading) {
         return <ClaimsSkeleton />;
@@ -38,14 +38,14 @@ export function ClaimsTab() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {(claims || []).length === 0 ? (
+                        {(resolutions || []).length === 0 ? (
                             <TableRow>
                                 <TableCell colSpan={6} className="text-center text-muted-foreground">
                                     No claims to review
                                 </TableCell>
                             </TableRow>
                         ) : (
-                            (claims || []).map((claim) => (
+                            (resolutions || []).map((claim) => (
                                 <TableRow key={claim.id}>
                                     <TableCell className="font-medium max-w-xs truncate px-4 py-5">
                                         {claim.item_title}
@@ -66,16 +66,22 @@ export function ClaimsTab() {
                                                 Pending
                                             </Badge>
                                         )}
-                                        {claim.status === "approved" && (
+                                        {(claim.status === "approved" || claim.status === "completed") && (
                                             <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                                                 <CheckCircle className="h-3 w-3 mr-1" />
                                                 Approved
                                             </Badge>
                                         )}
-                                        {claim.status === "rejected" && (
+                                        {(claim.status === "rejected" || claim.status === "invalidated") && (
                                             <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
                                                 <XCircle className="h-3 w-3 mr-1" />
                                                 Rejected
+                                            </Badge>
+                                        )}
+                                        {claim.status === "return_initiated" && (
+                                            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                                <RotateCcw className="h-3 w-3 mr-1" />
+                                                Return Initiated
                                             </Badge>
                                         )}
                                     </TableCell>
@@ -89,7 +95,7 @@ export function ClaimsTab() {
                                                 variant="outline"
                                                 asChild
                                             >
-                                                <Link href={`/claims/${claim.id}`}>View</Link>
+                                                <Link href={`/resolution/${claim.id}`}>View</Link>
                                             </Button>
                                         </div>
                                     </TableCell>

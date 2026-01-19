@@ -88,9 +88,13 @@ export function useNotifications() {
     // Mark a single notification as read
     // Optimistic update first, server update second
     const markAsRead = async (id: string) => {
-        const previousNotifications = notificationsData;
-        const previousCount = countData;
+        const prevNotifications = notificationsData
+            ? { notifications: [...notificationsData.notifications] }
+            : undefined;
 
+        const prevCount = countData ? { ...countData } : undefined;
+
+        // Optimistic update
         mutateNotifications(
             (current) => ({
                 notifications:
@@ -110,14 +114,10 @@ export function useNotifications() {
 
         const res = await readNotification(id);
 
-        // Roll back optimistic updates if server fails
         if (!res.ok) {
-            mutateNotifications(previousNotifications, false);
-            mutateCount(previousCount, false);
-        } else {
-            // Revalidate to ensure cache is fresh with server state
-            mutateNotifications();
-            mutateCount();
+            // rollback
+            mutateNotifications(prevNotifications, false);
+            mutateCount(prevCount, false);
         }
 
         return res;

@@ -3,7 +3,7 @@
 import {
     OverviewStats,
     ActivityItem,
-    ClaimDetail,
+    ResolutionDetail,
     UserDetail,
     ReportedItemDetail,
     ModerateUserRequest,
@@ -47,7 +47,7 @@ export async function getActivity(limit = 20) {
     }
 }
 
-export async function getClaims(status?: string, limit = 50, skip = 0) {
+export async function getResolutions(status?: string, limit = 50, skip = 0) {
     const params = new URLSearchParams();
     if (status) params.append("status", status);
     params.append("limit", limit.toString());
@@ -61,7 +61,7 @@ export async function getClaims(status?: string, limit = 50, skip = 0) {
             return { ok: false, status: res.status };
         }
 
-        return { ok: true, data: await safeJson(res) as ClaimDetail[] }
+        return { ok: true, data: await safeJson(res) as ResolutionDetail[] }
     } catch (err) {
         if (err instanceof UnauthorizedError) throw err;
 
