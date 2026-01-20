@@ -9,7 +9,7 @@ import { LogOut, ChevronDown } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import type { Session } from 'next-auth';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { setHostel, setPhoneNumber } from '@/lib/api/client';
+import { setHostel, setPhoneNumber } from '@/lib/api/client-invoked';
 import { useEffect, useState, useRef, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';

@@ -16,7 +16,7 @@ import {
     rejectClaim,
     completeResolution,
     invalidateResolution,
-} from "@/lib/api/client";
+} from "@/lib/api/client-invoked";
 
 interface ClaimStatusContentProps {
     resolution: Resolution;

@@ -31,7 +31,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
-import { postLostFoundItem } from '@/lib/api/client';
+import { postLostFoundItem } from '@/lib/api/client-invoked';
 import { signIn } from "next-auth/react";
 import type { Session } from 'next-auth';
 import { ImageViewer } from '@/components/image-viewer';
@@ -398,7 +398,7 @@ export function ItemFormClient({ session, type }: ItemFormClientProps) {
                                                             try {
                                                                 // Compress the image
                                                                 const compressedFile = await compressImage(file);
-                                                                
+
                                                                 field.onChange(compressedFile);
 
                                                                 const reader = new FileReader();

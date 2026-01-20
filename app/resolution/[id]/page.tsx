@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { getResolutionStatus } from "@/lib/api/client";
+import { getResolutionStatus } from "@/lib/api/client-invoked";
 import { notFound, redirect } from "next/navigation";
 import { ClaimStatusContent } from "./resolution_content";
 import Link from "next/link";

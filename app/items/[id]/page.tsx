@@ -12,7 +12,12 @@ export default async function ItemPage({ params }: { params: Promise<{ id: strin
 
     // Fetch item data
     const res = await fetchItem(id, session?.backendToken);
-    if (!res.ok) notFound();
+
+    if (!res.ok) {
+        notFound();
+    }
+
+    console.log(res);
 
     const { item, reporter, claim_status } = res.data;
 
