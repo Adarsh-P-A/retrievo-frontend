@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { getResolutionStatus } from "@/lib/api/client-invoked";
 import { notFound, redirect } from "next/navigation";
-import { ClaimStatusContent } from "./resolution_content";
+import { ResolutionStatusContent } from "./resolution_content";
 import Link from "next/link";
 
 export default async function ClaimStatusPage({ params }: { params: Promise<{ id: string }>; }) {
@@ -41,10 +41,8 @@ export default async function ClaimStatusPage({ params }: { params: Promise<{ id
         if (res.status === 403) return notFound();
     }
 
-    console.log(res.data);
-
     return (
-        <ClaimStatusContent
+        <ResolutionStatusContent
             resolution={res.data.resolution}
             item={res.data.item}
             finderContact={res.data.finder_contact}

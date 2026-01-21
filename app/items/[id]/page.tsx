@@ -17,8 +17,6 @@ export default async function ItemPage({ params }: { params: Promise<{ id: strin
         notFound();
     }
 
-    console.log(res);
-
     const { item, reporter, claim_status } = res.data;
 
     return (

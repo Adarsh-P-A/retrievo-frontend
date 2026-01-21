@@ -18,7 +18,7 @@ import {
     invalidateResolution,
 } from "@/lib/api/client-invoked";
 
-interface ClaimStatusContentProps {
+interface ResolutionStatusContentProps {
     resolution: Resolution;
     item: Item;
     finderContact: FinderContact | null;
@@ -26,7 +26,7 @@ interface ClaimStatusContentProps {
     allowedActions: AllowedAction[];
 }
 
-export function ClaimStatusContent({ resolution, item, finderContact, viewer, allowedActions }: ClaimStatusContentProps) {
+export function ResolutionStatusContent({ resolution, item, finderContact, viewer, allowedActions }: ResolutionStatusContentProps) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
 
@@ -412,10 +412,8 @@ export function ClaimStatusContent({ resolution, item, finderContact, viewer, al
                 )}
 
                 {/* Claim Description Card */}
-                <Card className="p-4 sm:p-6 border-l-4 border-l-blue-500 shadow-sm">
-                    <h2 className="text-lg font-semibold mb-3">
-                        {viewer.role === "finder" ? "Claimant's Description" : "Your Description"}
-                    </h2>
+                <Card className="p-4 sm:p-6 border-l-4 border-l-teal-500 shadow-sm">
+                    <h2 className="text-lg font-semibold mb-3">Description</h2>
                     <p className="text-base leading-relaxed text-foreground whitespace-pre-wrap">
                         {resolution.description}
                     </p>

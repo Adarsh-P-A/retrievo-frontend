@@ -101,8 +101,6 @@ export function ReportsTab() {
                                                                     <span className="truncate">{item.title}</span>
                                                                     <ExternalLink className="h-4 w-4 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
                                                                 </button>
-                                                                {/* TODO: Add visibility info
-                                                            Ensures that only same gender admins can moderate gender specific items. */}
                                                                 <div className="flex items-center gap-2 mt-1">
                                                                     <span className="text-sm text-muted-foreground">
                                                                         by {item.owner_name}
@@ -110,10 +108,13 @@ export function ReportsTab() {
                                                                 </div>
                                                             </div>
 
-                                                            <div className="flex items-center gap-2 shrink-0">
+                                                            <div className="flex items-center gap-2 shrink-0 select-none">
                                                                 <Badge variant="destructive" className="gap-1">
                                                                     <Flag className="h-3 w-3" />
                                                                     {item.report_count} {item.report_count === 1 ? 'report' : 'reports'}
+                                                                </Badge>
+                                                                <Badge>
+                                                                    {item.visibility.charAt(0).toUpperCase() + item.visibility.slice(1)}
                                                                 </Badge>
                                                                 {item.is_hidden && (
                                                                     <Badge variant="secondary" className="gap-1">
