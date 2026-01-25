@@ -6,14 +6,18 @@ import Link from "next/link";
 
 export default async function ClaimStatusPage({ params }: { params: Promise<{ id: string }>; }) {
     const session = await auth();
-    const isAuthenticated =
-        !!session?.user && Date.now() < (session?.expires_at ?? 0);
+    const { id } = await params;
 
-    if (!isAuthenticated) {
-        redirect('/auth/signin?callbackUrl=/claims/' + (await params).id);
+    // Check authentication
+    if (!session?.user) {
+        redirect(`/auth/signin?callbackUrl=/resolution/${id}`);
     }
 
-    const { id } = await params;
+    // Check if user needs onboarding
+    const needsOnboarding = !session.user.hostel || !session.user.phone;
+    if (needsOnboarding) {
+        redirect('/onboarding');
+    }
 
     // Fetch resolution status
     const res = await getResolutionStatus(id);

@@ -11,15 +11,15 @@ export default async function ReportPage({ searchParams }: { searchParams: Promi
 
     const session = await auth();
 
-    const isAuthenticated =
-        !!session?.user && Date.now() < (session?.expires_at ?? 0);
-
-    if (!isAuthenticated) {
+    // Check authentication
+    if (!session?.user) {
         redirect(`/auth/signin?callbackUrl=/report?type=${type}`);
     }
 
-    if (session?.user.hostel === null) {
-        redirect(`/profile?reason=hostel_required`);
+    // Check if user needs onboarding
+    const needsOnboarding = !session.user.hostel || !session.user.phone;
+    if (needsOnboarding) {
+        redirect('/onboarding');
     }
 
     return (
