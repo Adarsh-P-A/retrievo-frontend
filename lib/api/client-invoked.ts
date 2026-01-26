@@ -1,5 +1,6 @@
 "use server";
 
+import { OnboardingPayload } from "@/types/user";
 import { authFetch, safeJson, UnauthorizedError } from "./helpers";
 
 // POST: Lost or Found Item
@@ -333,6 +334,27 @@ export async function reportItem(itemId: string, reason: string) {
         return { ok: true };
     } catch (err) {
         console.error("reportItem error:", err);
+        return { ok: false, error: String(err) };
+    }
+}
+
+// POST: Onboarding Completion
+export async function updateOnboarding(payload: OnboardingPayload) {
+    try {
+        const res = await authFetch('/profile/complete-onboarding', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) {
+            console.error("updateOnboarding failed:", res.status);
+            return { ok: false, status: res.status };
+        }
+
+        return { ok: true };
+    } catch (err) {
+        console.error("updateOnboarding error:", err);
         return { ok: false, error: String(err) };
     }
 }

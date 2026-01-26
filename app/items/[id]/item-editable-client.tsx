@@ -27,12 +27,13 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useItemEditable } from "@/lib/hooks/use-item-editable";
 import { Combobox } from "@/components/ui/combo-box";
 import { LOCATION_MAP, LocationKey } from "@/lib/constants/locations";
 import { ResolutionStatus } from "@/types/resolutions";
 import { DeleteConfirmationDialog, ReportDialog, SubmitClaimDialog } from "./item-dialogs";
+import { needsOnboarding } from "@/lib/utils/needsOnboarding";
 
 interface ItemEditableProps {
     item: Item;
@@ -178,7 +179,7 @@ export default function ItemEditable({ item, reporter, resolution_status, sessio
                                         placeholder="Describe the item in detail..."
                                     />
                                 ) : (
-                                    <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed break-words">
+                                    <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed wrap-break-word">
                                         {formData.description || "No description provided."}
                                     </p>
                                 )}
@@ -202,7 +203,7 @@ export default function ItemEditable({ item, reporter, resolution_status, sessio
                                         placeholder="Item title"
                                     />
                                 ) : (
-                                    <h1 className="text-3xl font-bold leading-tight flex-1 break-words">
+                                    <h1 className="text-3xl font-bold leading-tight flex-1 wrap-break-word">
                                         {formData.title}
                                     </h1>
                                 )}
@@ -347,7 +348,7 @@ export default function ItemEditable({ item, reporter, resolution_status, sessio
                                             disabled={isSaving}
                                         />
                                     ) : (
-                                        <p className="text-muted-foreground text-sm break-words">
+                                        <p className="text-muted-foreground text-sm wrap-break-word">
                                             {LOCATION_MAP[formData.location]?.label ?? formData.location}
                                         </p>
                                     )}
@@ -429,6 +430,11 @@ export default function ItemEditable({ item, reporter, resolution_status, sessio
                                         return
                                     }
 
+                                    if (needsOnboarding(session)) {
+                                        router.push('/onboarding');
+                                        return;
+                                    }
+
                                     setIsClaiming(true);
                                 }}
                             >
@@ -446,6 +452,11 @@ export default function ItemEditable({ item, reporter, resolution_status, sessio
                                     if (!isAuthenticated) {
                                         router.push(`/auth/signin?callbackUrl=/items/${item.id}`)
                                         return
+                                    }
+
+                                    if (needsOnboarding(session)) {
+                                        router.push('/onboarding');
+                                        return;
                                     }
 
                                     setIsClaiming(true);
