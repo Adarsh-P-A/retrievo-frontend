@@ -2,6 +2,7 @@ import { auth } from '@/auth';
 import { ProfileClient } from '@/app/profile/profile-client';
 import { SessionProvider } from 'next-auth/react';
 import { redirect } from 'next/navigation';
+import { needsOnboarding } from '@/lib/utils/needsOnboarding';
 
 export default async function ProfilePage() {
     const session = await auth();
@@ -12,8 +13,7 @@ export default async function ProfilePage() {
     }
 
     // Check if user needs onboarding
-    const needsOnboarding = !session.user.hostel || !session.user.phone;
-    if (needsOnboarding) {
+    if (needsOnboarding(session)) {
         redirect('/onboarding');
     }
 

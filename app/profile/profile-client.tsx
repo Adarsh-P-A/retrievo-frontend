@@ -6,8 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ItemCard } from '@/components/item-card';
 import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { setHostel, setPhoneNumber } from '@/lib/api/client-invoked';
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import useSWR from 'swr';
@@ -22,12 +21,6 @@ import { LogOut } from 'lucide-react';
 
 export function ProfileClient() {
     const { data: session } = useSession();
-
-    const [isSavingHostel, isSettingHostel] = useState(false);
-    const [isSavingPhone, isSettingPhone] = useState(false);
-
-    const [phone, setPhone] = useState("");
-    const [country_code, setCountrycode] = useState("+91")
 
     const toastShownRef = useRef(false); // To prevent multiple toasts
 
@@ -78,69 +71,6 @@ export function ProfileClient() {
     const userItems = [...formattedLost, ...formattedFound].sort(
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
-
-    const handleSetHostel = async (hostelType: string) => {
-        isSettingHostel(true);
-
-        try {
-            const res = await setHostel(hostelType);
-
-
-            if (!res.ok) {
-                toast.error("Failed to set hostel. Please try again.");
-                return;
-            }
-
-            // It doesn't matter on what data we pass as params, because we are fetching from backend again to ensure correctness
-            toast.success("Hostel set successfully!");
-        } catch (error) {
-            console.error("Error setting hostel:", error);
-            toast.error("An error occurred. Please try again.");
-        } finally {
-            isSettingHostel(false);
-        }
-    };
-
-    const handleSetPhone = async () => {
-        if (!phone) {
-            toast.error("Enter a valid phone number");
-            return;
-        }
-
-        isSettingPhone(true);
-
-        try {
-            const res = await setPhoneNumber(country_code + phone);
-
-            if (!res.ok) {
-                toast.error("Failed to save phone number. Please try again.");
-                return;
-            }
-
-            // It doesn't matter on what data we pass as params, because we are fetching from backend again to ensure correctness
-            toast.success("Phone number saved successfully!");
-        } catch (error) {
-            toast.error("An error occurred. Please try again.");
-            console.error("Error saving phone number:", error);
-        } finally {
-            isSettingPhone(false);
-        }
-    }
-    const codes = [
-        { value: "+91", label: "IN" },
-        { value: "+971", label: "UAE" },
-        { value: "+966", label: "SA" },
-        { value: "+974", label: "QA" },
-        { value: "+965", label: "KW" },
-        { value: "+968", label: "OM" },
-        { value: "+973", label: "BH" },
-        { value: "+1", label: "US/CA" },
-        { value: "+44", label: "UK" },
-        { value: "+61", label: "AU" },
-        { value: "+64", label: "NZ" },
-        { value: "+353", label: "IE" },
-        { value: "+49", label: "DE" },
-    ]
 
     return (
         <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-4rem)]">

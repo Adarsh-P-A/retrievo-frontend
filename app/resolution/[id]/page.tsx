@@ -3,6 +3,7 @@ import { getResolutionStatus } from "@/lib/api/client-invoked";
 import { notFound, redirect } from "next/navigation";
 import { ResolutionStatusContent } from "./resolution_content";
 import Link from "next/link";
+import { needsOnboarding } from "@/lib/utils/needsOnboarding";
 
 export default async function ClaimStatusPage({ params }: { params: Promise<{ id: string }>; }) {
     const session = await auth();
@@ -14,8 +15,7 @@ export default async function ClaimStatusPage({ params }: { params: Promise<{ id
     }
 
     // Check if user needs onboarding
-    const needsOnboarding = !session.user.hostel || !session.user.phone;
-    if (needsOnboarding) {
+    if (needsOnboarding(session)) {
         redirect('/onboarding');
     }
 

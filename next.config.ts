@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: process.env.CDN_HOSTNAME!
+        hostname: "cdn.retrievo.dev",
       }
     ]
   }

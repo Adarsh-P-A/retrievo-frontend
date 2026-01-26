@@ -2,9 +2,9 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, Phone, Building2, ArrowRight, Check, Instagram } from 'lucide-react';
+import { ChevronDown, Phone, Building2, Check, Instagram } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import {
@@ -21,18 +21,19 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { setHostel, setPhoneNumber } from '@/lib/api/client-invoked';
+import { updateOnboarding } from '@/lib/api/client-invoked';
 import { toast } from 'sonner';
+import { OnboardingPayload } from '@/types/user';
+import { needsOnboarding } from '@/lib/utils/needsOnboarding';
 
 export default function OnboardingClient() {
-    const { data: session, update } = useSession();
+    const { data: session, status, update } = useSession();
     const router = useRouter();
 
     const [phoneNumber, setPhoneNumberState] = useState(session?.user?.phone || '');
     const [hostel, setHostelState] = useState<'boys' | 'girls' | ''>(session?.user?.hostel || '');
     const [instagramId, setInstagramId] = useState(session?.user?.instagramId || "");
 
-    const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [countryCode, setCountryCode] = useState("+91");
 
@@ -52,61 +53,66 @@ export default function OnboardingClient() {
         { value: "+49", label: "DE" },
     ];
 
-    // Redirect if already onboarded (server handles auth redirect)
-    if (session?.user?.hostel && session?.user?.phone) {
-        router.replace('/items');
-        return null;
-    }
+    useEffect(() => {
+        if (status !== "authenticated") return;
+
+        if (!needsOnboarding(session)) {
+            router.replace("/items");
+        }
+    }, [status, session, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
 
-        if (phoneNumber.length < 8) {
-            setError('Please enter a valid phone number.');
-            return;
-        }
-        if (!phoneNumber.trim() || !hostel) {
-            setError('Please fill in all fields.');
+        // Validation
+        if (!hostel) {
+            toast.error("Please select your hostel.");
             return;
         }
 
-        const fullPhoneNumber = `${countryCode}${phoneNumber.trim()}`;
+        if (!phoneNumber.trim() && !instagramId.trim()) {
+            toast.error("Please provide at least one contact detail.");
+            return;
+        }
+
+        if (phoneNumber && phoneNumber.length < 8) {
+            toast.error("Please enter a valid phone number.");
+            return;
+        }
+
+        const payload: OnboardingPayload = {
+            hostel,
+            phone: phoneNumber.trim()
+                ? `${countryCode}${phoneNumber.trim()}`
+                : null,
+            instagramId: instagramId.trim() || null,
+        };
 
         try {
             setIsSubmitting(true);
 
-            // Call both APIs in parallel
-            const [hostelResult, phoneResult] = await Promise.all([
-                setHostel(hostel),
-                setPhoneNumber(fullPhoneNumber)
-            ]);
+            const res = await updateOnboarding(payload);
 
-            if (!hostelResult.ok || !phoneResult.ok) {
-                setError('Failed to save your information. Please try again.');
+            if (!res.ok) {
+                toast.error("Failed to complete onboarding. Please try again.");
                 return;
             }
 
-            // Update the session with new data
-            await update({
-                hostel: hostel,
-                phone: fullPhoneNumber
-            });
+            // Update NextAuth session in one shot
+            await update(payload);
 
-            toast.success('Welcome! Your profile has been set up.');
-
-            // Redirect to items page
-            router.push('/items');
+            toast.success("Welcome! Your profile has been set up.");
+            router.replace("/items");
         } catch (err) {
-            console.error('Onboarding error:', err);
-            setError('Something went wrong. Please try again.');
+            console.error("Onboarding error:", err);
+            toast.error("An unexpected error occurred. Please try again.");
         } finally {
             setIsSubmitting(false);
         }
     };
 
     return (
-        <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4 bg-linear-to-br from-blue-50/50 to-indigo-50/50 dark:from-slate-950 dark:to-slate-900 ">
+        <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4 bg-linear-to-br">
             <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:bg-grid-slate-700/25 dark:[mask-image:linear-gradient(0deg,rgba(255,255,255,0.1),rgba(255,255,255,0.5))]" />
             <Card className="w-full max-w-lg shadow-2xl border-border/40 relative z-10 backdrop-blur-sm bg-background/95">
                 <CardHeader className="text-center pb-2 pt-8">
@@ -124,21 +130,18 @@ export default function OnboardingClient() {
                                 <Phone className="w-4 h-4 text-muted-foreground" />
                                 Phone Number <span className="text-red-500">*</span>
                             </label>
-                            <div className="flex rounded-md shadow-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 gap-2">
+                            <div className="flex rounded-md shadow-sm overflow-hidden ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button
                                             variant="outline"
                                             role="combobox"
-                                            className="w-[70px] [font-variant-numeric:tabular-nums]"
+                                            className="rounded-r-none w-[70px] border-r-0 [font-variant-numeric:tabular-nums]"
                                         >
-                                            <span className="w-7 text-center">
-                                                {countryCode}
-                                            </span>
+                                            <span className="w-7 text-center">{countryCode}</span>
                                             <ChevronDown className="ml-1 h-4 w-4 opacity-50" />
                                         </Button>
                                     </DropdownMenuTrigger>
-
                                     <DropdownMenuContent className="min-w-[200px]">
                                         {codes.map((item) => (
                                             <DropdownMenuItem
@@ -152,14 +155,15 @@ export default function OnboardingClient() {
                                         ))}
                                     </DropdownMenuContent>
                                 </DropdownMenu>
+
                                 <Input
                                     id="phone"
-                                    className="flex-1 rounded-l-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                                    type="tel"
                                     placeholder="Enter your number"
                                     value={phoneNumber}
                                     onChange={(e) => setPhoneNumberState(e.target.value)}
                                     disabled={isSubmitting}
-                                    type="tel"
+                                    className="flex-1 rounded-l-none focus-visible:ring-0 focus-visible:ring-offset-0"
                                 />
                             </div>
                         </div>
@@ -250,14 +254,11 @@ export default function OnboardingClient() {
                             <p className="text-xs text-muted-foreground">
                                 Don't include <span className="font-mono">@</span>, just the username.
                             </p>
-                        </div>
 
-                        {/* Error Display */}
-                        {error && (
-                            <div className="text-sm font-medium text-destructive text-center p-3 rounded-md bg-destructive/10 animate-in fade-in slide-in-from-top-1">
-                                {error}
-                            </div>
-                        )}
+                            <p className="text-xs text-muted-foreground">
+                                Providing at least one contact detail (phone or Instagram) is mandatory.
+                            </p>
+                        </div>
                     </CardContent>
 
                     <p className="text-xs text-muted-foreground px-8 mt-4">
@@ -275,7 +276,7 @@ export default function OnboardingClient() {
                                 'Saving...'
                             ) : (
                                 <span className="flex items-center gap-2">
-                                    Complete Profile <ArrowRight className="w-4 h-4" />
+                                    Complete Profile
                                 </span>
                             )}
                         </Button>

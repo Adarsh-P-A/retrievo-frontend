@@ -33,6 +33,7 @@ import { Combobox } from "@/components/ui/combo-box";
 import { LOCATION_MAP, LocationKey } from "@/lib/constants/locations";
 import { ResolutionStatus } from "@/types/resolutions";
 import { DeleteConfirmationDialog, ReportDialog, SubmitClaimDialog } from "./item-dialogs";
+import { needsOnboarding } from "@/lib/utils/needsOnboarding";
 
 interface ItemEditableProps {
     item: Item;
@@ -429,9 +430,9 @@ export default function ItemEditable({ item, reporter, resolution_status, sessio
                                         return
                                     }
 
-                                    const needsOnboarding = !session.user.hostel || !session.user.phone;
-                                    if (needsOnboarding) {
-                                        redirect('/onboarding');
+                                    if (needsOnboarding(session)) {
+                                        router.push('/onboarding');
+                                        return;
                                     }
 
                                     setIsClaiming(true);
@@ -453,9 +454,9 @@ export default function ItemEditable({ item, reporter, resolution_status, sessio
                                         return
                                     }
 
-                                    const needsOnboarding = !session.user.hostel || !session.user.phone;
-                                    if (needsOnboarding) {
-                                        redirect('/onboarding');
+                                    if (needsOnboarding(session)) {
+                                        router.push('/onboarding');
+                                        return;
                                     }
 
                                     setIsClaiming(true);
