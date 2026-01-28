@@ -69,47 +69,47 @@ export async function deleteItem(itemId: string) {
     }
 }
 
-// POST: Set User Hostel
-export async function setHostel(hostel: string) {
-    try {
-        const res = await authFetch('/profile/set-hostel', {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ hostel }),
-        });
+// // POST: Set User Hostel
+// export async function setHostel(hostel: string) {
+//     try {
+//         const res = await authFetch('/profile/set-hostel', {
+//             method: "POST",
+//             headers: { "Content-Type": "application/json" },
+//             body: JSON.stringify({ hostel }),
+//         });
 
-        if (!res.ok) {
-            console.error("setHostel failed:", res.status);
-            return { ok: false, status: res.status };
-        }
+//         if (!res.ok) {
+//             console.error("setHostel failed:", res.status);
+//             return { ok: false, status: res.status };
+//         }
 
-        return { ok: true };
-    } catch (err) {
-        console.error("setHostel error:", err);
-        return { ok: false, error: String(err) };
-    }
-}
+//         return { ok: true };
+//     } catch (err) {
+//         console.error("setHostel error:", err);
+//         return { ok: false, error: String(err) };
+//     }
+// }
 
-// POST: Set User Phone Number
-export async function setPhoneNumber(phone: string) {
-    try {
-        const res = await authFetch('/profile/set-phone', {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ phone }),
-        });
+// // POST: Set User Phone Number
+// export async function setPhoneNumber(phone: string) {
+//     try {
+//         const res = await authFetch('/profile/set-phone', {
+//             method: "POST",
+//             headers: { "Content-Type": "application/json" },
+//             body: JSON.stringify({ phone }),
+//         });
 
-        if (!res.ok) {
-            console.error("setPhoneNumber failed:", res.status);
-            return { ok: false, status: res.status };
-        }
+//         if (!res.ok) {
+//             console.error("setPhoneNumber failed:", res.status);
+//             return { ok: false, status: res.status };
+//         }
 
-        return { ok: true };
-    } catch (err) {
-        console.error("setPhoneNumber error:", err);
-        return { ok: false, error: String(err) };
-    }
-}
+//         return { ok: true };
+//     } catch (err) {
+//         console.error("setPhoneNumber error:", err);
+//         return { ok: false, error: String(err) };
+//     }
+// }
 
 // POST: Create a resolution (claim) for a found item
 export async function createResolution(itemId: string, description: string) {

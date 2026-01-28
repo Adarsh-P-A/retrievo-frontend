@@ -45,11 +45,11 @@ const formSchema = z.object({
     title: z
         .string()
         .min(2, "Title must be at least 2 characters.")
-        .max(30, "Title must be at most 30 characters."),
+        .max(20, "Title must be at most 20 characters."),
 
     description: z
         .string()
-        .min(10, "Description must be at least 10 characters.")
+        .min(20, "Description must be at least 20 characters.")
         .max(280, "Description must be at most 280 characters."),
 
     category: z
@@ -136,6 +136,8 @@ export function ItemFormClient({ session, type }: ItemFormClientProps) {
 
             const res = await postLostFoundItem(formData);
 
+            console.log(res);
+
             if (res.status === 401) {
                 router.push(`/auth/signin?callbackUrl=/report?type=${type}`);
                 return;
@@ -152,6 +154,7 @@ export function ItemFormClient({ session, type }: ItemFormClientProps) {
             }
 
             toast.success("Item reported successfully!");
+
             router.push(`/items/${res.data}`);
         } catch (error) {
             console.error(error);

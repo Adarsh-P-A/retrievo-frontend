@@ -46,7 +46,6 @@ export function ItemsGridClient() {
             return result;
         },
         {
-            revalidateFirstPage: false,
             revalidateAll: false,
         }
     );

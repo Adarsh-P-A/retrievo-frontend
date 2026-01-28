@@ -104,7 +104,7 @@ export function useItemEditable({ item, reporter, resolution_status, session }: 
         if (res.ok) {
             toast.success("Item updated successfully.");
             setIsEditing(false);
-        } else {
+
             toast.error("Unable to update the item. Please try again later.");
         }
 
@@ -129,6 +129,7 @@ export function useItemEditable({ item, reporter, resolution_status, session }: 
 
         if (res.ok) {
             toast.success("Item deleted successfully");
+
             router.push("/items");
         } else {
             toast.error("Failed to delete item");
