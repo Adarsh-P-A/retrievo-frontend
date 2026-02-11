@@ -436,20 +436,20 @@ export function ItemFormClient({ session, type }: ItemFormClientProps) {
                                                 fill
                                                 unoptimized
                                                 className="object-cover" />
-                                            <Button
-                                                type="button"
-                                                variant="destructive"
-                                                size="icon"
-                                                disabled={isSubmitting}
-                                                className="absolute top-2 right-2 h-8 w-8 rounded-full cursor-pointer"
-                                                onClick={() => {
-                                                    setPreview(null);
-                                                    field.onChange(null);
-                                                }}
-                                            >
-                                                <X className="h-4 w-4" />
-                                            </Button>
                                         </ImageViewer>
+                                        <Button
+                                            type="button"
+                                            variant="destructive"
+                                            size="icon"
+                                            disabled={isSubmitting}
+                                            className="absolute top-2 right-2 h-8 w-8 rounded-full cursor-pointer z-10"
+                                            onClick={() => {
+                                                setPreview(null);
+                                                field.onChange(null);
+                                            }}
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </Button>
                                     </div>
                                 )}
                             </div>

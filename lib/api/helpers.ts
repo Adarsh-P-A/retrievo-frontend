@@ -27,10 +27,6 @@ export async function internalFetchWithTimeout(
         throw new Error("INTERNAL_SECRET_KEY is not configured");
     }
 
-    if (!process.env.CLOUDFLARE_BYPASS_SECRET) {
-        throw new Error("CLOUDFLARE_BYPASS_SECRET is not configured");
-    }
-
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -41,7 +37,6 @@ export async function internalFetchWithTimeout(
             headers: {
                 ...(options.headers || {}),
                 "X-Internal-Secret": process.env.INTERNAL_SECRET_KEY,
-                "X-Vercel-Bypass": process.env.CLOUDFLARE_BYPASS_SECRET,
             },
         });
     } catch (error) {
