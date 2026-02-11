@@ -93,6 +93,11 @@ export default function OnboardingClient() {
 
             const res = await updateOnboarding(payload);
 
+            if (res.status === 422) {
+                toast.error("Invalid. Please check your details and try again.");
+                return;
+            }
+
             if (!res.ok) {
                 toast.error("Failed to complete onboarding. Please try again.");
                 return;
